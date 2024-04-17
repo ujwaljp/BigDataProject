@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commodity Trade Analysis</title>
+    {{ globe | safe }}
+</head>
+<body>
+    <h1>Commodity Trade Analysis by Country</h1>
+
+    <select id="commodity-dropdown" name="commodity">
+        {% for commodity in commodity_values %}
+            {% if selected_commodity == commodity %}
+                <option value="{{ commodity }}" selected>{{ commodity }}</option>
+            {% else %}
+                <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    <script>
+        // Event listener to trigger page reload when commodity is selected
+        document.getElementById('commodity-dropdown').addEventListener('change', function(event) {
+            var selectedCommodity = this.value;
+            window.location.href = '/dashboard/home/?commodity=' + encodeURIComponent(selectedCommodity);
+        });
+    </script>
+</body>
+</html>
