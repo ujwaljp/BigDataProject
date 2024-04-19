@@ -3,14 +3,15 @@ import pandas as pd
 import plotly.express as px
 import json
 import numpy as np
-
+from myproject.settings import BASE_DIR
+from django.http import JsonResponse
 
 # Create your views here.
 def home(request) :
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
 
     # Read the dataset
-    df = pd.read_csv('/home/akhil/Documents/CS661/BigDataProject/myproject/myapp/archive/2010_2021_HS2_export.csv')
+    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2021_HS2_export.csv')
     # Load geojson data
     with open('/home/akhil/Documents/CS661/BigDataProject/myproject/myapp/archive/countries.geo.json', 'r') as f:
         geojson_data = json.load(f)
@@ -77,3 +78,70 @@ def home(request) :
 
 def commodity_selection(request) :
     return render(request, 'commodity_selection.html')
+
+def country_selection(request) :
+    selected_country = request.GET.get('country', 'AFGHANISTAN')
+    start_year = int(request.GET.get('start_year', 2010))
+    end_year = int(request.GET.get('end_year', 2021))
+
+    # Read the dataset
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+    # Load geojson data
+    with open('/home/akhil/Documents/CS661/BigDataProject/myproject/myapp/archive/countries.geo.json', 'r') as f:
+        geojson_data = json.load(f)
+
+    df['year'] = df['year'].astype(int)
+    df2['year'] = df2['year'].astype(int)
+    # Filter data for the selected country
+    country_export_data = df[(df['country'] == selected_country) & (df['year'] >= start_year) & (df['year'] <= end_year)]
+    country_import_data = df2[(df2['country'] == selected_country) & (df2['year'] >= start_year) & (df2['year'] <= end_year)]
+    # Group by country and sum total trade value
+    country_total_export = country_export_data.groupby('Commodity')['value'].sum().reset_index()
+    top_commodities_export = country_total_export.nlargest(6, 'value')
+
+    country_total_import = country_import_data.groupby('Commodity')['value'].sum().reset_index()
+    top_commodities_import = country_total_import.nlargest(6, 'value')    
+    
+    other_value_export = country_total_export[~country_total_export['Commodity'].isin(top_commodities_export['Commodity'])]['value'].sum()
+    top_commodities_export.loc[len(top_commodities_export)] = ['Others', other_value_export]
+
+    other_value_import = country_total_import[~country_total_import['Commodity'].isin(top_commodities_import['Commodity'])]['value'].sum()
+    top_commodities_import.loc[len(top_commodities_import)] = ['Others', other_value_import]
+
+    # Create dummy DataFrame with the selected country
+    dummy_df = pd.DataFrame({'country': [selected_country]})
+
+    # Create choropleth map
+    fig = px.choropleth(
+        data_frame=dummy_df,
+        locations='country',
+        locationmode='country names',
+        color=[1],  # Dummy color value
+        hover_name='country',
+        geojson=geojson_data,
+        # color_continuous_scale=['blue'],  # Set color to highlight the selected country
+    )
+
+    fig.update_layout(
+        title='Selected Country: ' + selected_country,
+        height=800,
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+    fig.update_geos(
+        fitbounds='locations',
+        showcountries=True,
+        projection_type="orthographic",
+        showocean=True,
+        oceancolor="LightBlue"
+    )
+
+
+    fig1 = px.pie(top_commodities_export, values='value', names='Commodity', hole=.3)
+    fig1.update_traces(textposition='inside', textinfo='percent+label')
+    fig1.update_layout(title=f'Top 6 Commodities Exported by {selected_country} and Others')
+
+    fig2 = px.pie(top_commodities_import, values='value', names='Commodity', hole=.3)
+    fig2.update_traces(textposition='inside', textinfo='percent+label')
+    fig2.update_layout(title=f'Top 6 Commodities Imported by {selected_country} and Others')
+    return render(request, 'country_selection.html', {'globe' : fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
