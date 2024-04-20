@@ -6,6 +6,7 @@ import pandas as pd
 from django_plotly_dash import DjangoDash
 from urllib.parse import quote
 from flask import redirect
+from django.http import HttpResponseRedirect
 # Define a lock to ensure thread-safe Dash app updates
 lock = Lock()
 
@@ -23,8 +24,11 @@ def display_selected_country(clickData):
         selected_country_encoded = quote(selected_country)
         # Redirect to the per_country page with the encoded selected country as a parameter
         # redirect(f'/dashboard/per_country/?country={selected_country_encoded}')
+        redirect_url = f'/country_selection/?country={selected_country_encoded}'
+        HttpResponseRedirect(redirect_url)
+        return f'/country_selection/?country={selected_country_encoded}'
         
-        return f"<script>window.location.href = '/dashboard/per_country/?country={selected_country_encoded}';</script>"
+        # return f"<script>window.location.href = '/dashboard/per_country/?country={selected_country_encoded}';</script>"
     else:
         return "Select a country by clicking on the heatmap"
 

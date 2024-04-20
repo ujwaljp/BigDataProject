@@ -1,14 +1,15 @@
+{% load plotly_dash %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commodity Trade Analysis</title>
-    {{ globe | safe }}
+
 </head>
 <body>
     <h1>Commodity Trade Analysis by Country</h1>
-
+    {% plotly_app name="dash_app" ratio=1.0 %}
     <select id="commodity-dropdown" name="commodity">
         {% for commodity in commodity_values %}
             {% if selected_commodity == commodity %}
