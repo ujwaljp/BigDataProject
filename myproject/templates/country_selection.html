@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Country Trade Analysis</title>
-    {{ globe | safe }}
     <style>
         .pie-chart-container {
             display: block;
@@ -28,6 +27,7 @@
     </style>
 </head>
 <body>
+    <div id="globe-chart">{{ globe | safe }}</div>
     <h1>Country Trade Analysis by Commodity</h1>
 
     <!-- Form container for country selection and year dropdowns -->

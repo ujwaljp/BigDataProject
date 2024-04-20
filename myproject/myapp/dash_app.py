@@ -5,34 +5,32 @@ import numpy as np
 import pandas as pd
 from django_plotly_dash import DjangoDash
 from urllib.parse import quote
-from flask import redirect
+import json
 # Define a lock to ensure thread-safe Dash app updates
 lock = Lock()
 
 app = DjangoDash("dash_app")  # Use DjangoDash instead of Dash
+app.layout = html.Div([
+    dcc.Graph(id='trade-heatmap', figure={}),
+    html.Div(id='selected-country', hidden=True)
+])
 
 # Update the figure based on the selected commodity
 @app.callback(
     Output('selected-country', 'children'),
     [Input('trade-heatmap', 'clickData')],
-    prevent_initial_call=True  # Avoids running the callback on initial load
+    prevent_initial_call=True
 )
 def display_selected_country(clickData):
     if clickData is not None:
         selected_country = clickData['points'][0]['location']
-        selected_country_encoded = quote(selected_country)
-        # Redirect to the per_country page with the encoded selected country as a parameter
-        # redirect(f'/dashboard/per_country/?country={selected_country_encoded}')
-        
-        return f"<script>window.location.href = '/dashboard/per_country/?country={selected_country_encoded}';</script>"
+        message = {'country': selected_country}
+        # window.parent.postMessage(json.dumps(message), '*')
+        return f'{selected_country}\n'
     else:
         return "Select a country by clicking on the heatmap"
 
 # Define the layout of your Dash app
-app.layout = html.Div([
-    dcc.Graph(id='trade-heatmap', figure={}),
-    html.Div(id='selected-country')
-])
 
 def run_dash_app(selected_commodity, df):
     # Filter data for the selected commodity

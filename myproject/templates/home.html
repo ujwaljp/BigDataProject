@@ -1,30 +1,91 @@
+{% load plotly_dash %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commodity Trade Analysis</title>
-    {{ globe | safe }}
+
 </head>
+
 <body>
     <h1>Commodity Trade Analysis by Country</h1>
-
     <select id="commodity-dropdown" name="commodity">
         {% for commodity in commodity_values %}
-            {% if selected_commodity == commodity %}
-                <option value="{{ commodity }}" selected>{{ commodity }}</option>
-            {% else %}
-                <option value="{{ commodity }}">{{ commodity }}</option>
-            {% endif %}
+        {% if selected_commodity == commodity %}
+        <option value="{{ commodity }}" selected>{{ commodity }}</option>
+        {% else %}
+        <option value="{{ commodity }}">{{ commodity }}</option>
+        {% endif %}
         {% endfor %}
     </select>
+    <div style="
+    position: relative;
+    padding-bottom: 100.0%;
+    height: 0;
+    overflow:hidden;
+    ">
+        <iframe id="my_iframe" src="/dash/app/dash_app/" style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    " frameborder="0"
+            sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
 
-    <script>
-        // Event listener to trigger page reload when commodity is selected
-        document.getElementById('commodity-dropdown').addEventListener('change', function(event) {
-            var selectedCommodity = this.value;
-            window.location.href = '/dashboard/home/?commodity=' + encodeURIComponent(selectedCommodity);
-        });
-    </script>
+
+        <script>
+            // Event listener to trigger page reload when commodity is selected
+            document.getElementById('commodity-dropdown').addEventListener('change', function (event) {
+                var selectedCommodity = this.value;
+                window.location.href = '/dashboard/home/?commodity=' + encodeURIComponent(selectedCommodity);
+            });
+
+            var iframe = document.getElementById('my_iframe');
+            // Get the iframe element
+
+            // Wait for the iframe to load
+            iframe.onload = function () {
+                // Access the document inside the iframe
+                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+                // Get the div with id 'react-entry-point'
+                var reactEntryPointDiv = iframeDocument.getElementById('react-entry-point');
+
+                // Create a MutationObserver to watch for changes in the react-entry-point div
+                var observer = new MutationObserver(function (mutationsList) {
+                    for (var mutation of mutationsList) {
+                        if (mutation.type === 'childList') {
+                            // Get the selected-country div once it is available
+                            var selectedCountryDiv = iframeDocument.getElementById('selected-country');
+                            if (selectedCountryDiv) {
+
+                                var observer2 = new MutationObserver(function (mutationsList2) {
+                                    for (var mutation2 of mutationsList2) {
+                                        if (mutation2.type === 'childList') {
+                                            // Trigger action when innerText of selected-country div changes
+                                            observer2.disconnect();
+                                            console.log('Selected country div text changed');
+                                            window.location.href = '/dashboard/country_selection/?country=' + selectedCountryDiv.innerText;
+                                        }
+                                    }
+                                });
+
+                                observer2.observe(selectedCountryDiv, { childList: true, subtree: true });
+                                observer.disconnect();
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                // Start observing changes in the react-entry-point div
+                observer.observe(reactEntryPointDiv, { childList: true, subtree: true });
+            };
+
+        </script>
 </body>
+
 </html>
