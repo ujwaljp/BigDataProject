@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-<!-- {% load plotly_dash %} -->
 
 {% block content %}
 <style>
@@ -24,14 +23,15 @@
     .chart {
         width: 100%;
     }
-    .commodity-dropdown{
-        width : 500px;
+
+    .commodity-dropdown {
+        width: 500px;
     }
 </style>
 
 <h1>Country Trade Analysis by Commodity</h1>
 
-<!-- Form container for country and commodity selection -->
+<!-- Form container for country selection -->
 <div class="form-container">
     <!-- Country selection dropdown menu -->
     <label for="country-dropdown">Select Country:</label>
@@ -45,62 +45,63 @@
         {% endfor %}
     </select>
 
-    <!-- Commodity selection dropdown menu -->
-    <label for="commodity-dropdown">Select Commodity:</label>
-    <select id="commodity-dropdown" name="commodity" class="commodity-dropdown">
-        {% for commodity in commodity_values %}
-        {% if selected_commodity == commodity %}
-        <option value="{{ commodity }}" selected>{{ commodity }}</option>
-        {% else %}
+</div>
+
+<!-- Second dropdown for import commodity -->
+<div class="form-container" id="import-commodity-container" style="display: block;">
+    <!-- Import commodity selection dropdown menu -->
+    <label for="import-commodity-dropdown">Select Import Commodity:</label>
+    <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
+        {% for commodity in import_commodity_values %}
         <option value="{{ commodity }}">{{ commodity }}</option>
-        {% endif %}
         {% endfor %}
     </select>
+</div>
 
-    <!-- Start year dropdown menu -->
-    <label for="start-year" class="year-dropdown">Start Year:</label>
-    <select id="start-year" name="start_year" class="year-dropdown">
-        {% for year in year_values %}
-        <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+<!-- Third dropdown for export commodity -->
+<div class="form-container" id="export-commodity-container" style="display : block;">
+    <!-- Export commodity selection dropdown menu -->
+    <label for="export-commodity-dropdown">Select Export Commodity:</label>
+    <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
+        {% for commodity in export_commodity_values %}
+        <option value="{{ commodity }}">{{ commodity }}</option>
         {% endfor %}
     </select>
-
-    <!-- End year dropdown menu -->
-    <label for="end-year" class="year-dropdown">End Year:</label>
-    <select id="end-year" name="end_year" class="year-dropdown">
-        {% for year in year_values %}
-        <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
-        {% endfor %}
-    </select>
-
-    <!-- Submit button -->
-    <button type="button" id="submit-btn" class="submit-btn">Submit</button>
+     <!-- Export commodity submit button -->
+     <button type="button" id="export-submit-btn" class="submit-btn">Submit</button>
 </div>
 
 <!-- Chart container -->
 <div class="chart-container">
     <!-- Render the chart -->
     <div id="chart" class="chart">
-        {{ bar_chart_html | safe }}
+        {{ line_chart_html | safe }}
     </div>
 </div>
 
 <script>
     // Event listener for submit button
-    document.getElementById('submit-btn').addEventListener('click', function (event) {
-        var selectedCountry = document.getElementById('country-dropdown').value;
-        var selectedCommodity = document.getElementById('commodity-dropdown').value;
-        var selectedStartYear = document.getElementById('start-year').value;
-        var selectedEndYear = document.getElementById('end-year').value;
+    var url, export_, import_;
 
+    document.getElementById('export-submit-btn').addEventListener('click', function (event) {
+        var selectedCountry = document.getElementById('country-dropdown').value;
+        import_ = document.getElementById('import-commodity-dropdown').value;
+        export_ = document.getElementById('export-commodity-dropdown').value;
         // Redirect with selected parameters
-        var url = '/dashboard/country_selection/?';
-        url += 'country=' + encodeURIComponent(selectedCountry);
-        url += '&commodity=' + encodeURIComponent(selectedCommodity);
-        url += '&start_year=' + encodeURIComponent(selectedStartYear);
-        url += '&end_year=' + encodeURIComponent(selectedEndYear);
+        url = '/dashboard/country_commodity_selection/?country=' + encodeURIComponent(selectedCountry) + '&import_commodity=' + encodeURIComponent(import_) + '&export_commodity=' + encodeURIComponent(export_);
         window.location.href = url;
     });
+
+    // Event listener for country dropdown change
+    document.getElementById('country-dropdown').addEventListener('change', function (event) {
+        // Show the import commodity dropdown
+        var selectedCountry = document.getElementById('country-dropdown').value;
+        url = '/dashboard/country_commodity_selection/?country=' + encodeURIComponent(selectedCountry);
+        window.location.href = url;
+    });
+
+    
 </script>
 
 {% endblock content %}
+
