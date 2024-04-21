@@ -58,33 +58,8 @@ def country_selection(request) :
 
     other_value_import = country_total_import[~country_total_import['Commodity'].isin(top_commodities_import['Commodity'])]['value'].sum()
     top_commodities_import.loc[len(top_commodities_import)] = ['Others', other_value_import]
-
-    # Create dummy DataFrame with the selected country
-    dummy_df = pd.DataFrame({'country': [selected_country]})
-
     # Create choropleth map
-    fig = px.choropleth(
-        data_frame=dummy_df,
-        locations='country',
-        locationmode='country names',
-        color=[1],  # Dummy color value
-        hover_name='country',
-        geojson=geojson_data,
-        # color_continuous_scale=['blue'],  # Set color to highlight the selected country
-    )
-
-    fig.update_layout(
-        title='Selected Country: ' + selected_country,
-        height=800,
-        plot_bgcolor='rgba(0,0,0,0)',
-    )
-    fig.update_geos(
-        fitbounds='locations',
-        showcountries=True,
-        projection_type="orthographic",
-        showocean=True,
-        oceancolor="LightBlue"
-    )
+    dash_app.run_dash_app(None, df, selected_country, geojson_data)
 
 
     fig1 = px.pie(top_commodities_export, values='value', names='Commodity', hole=.3)
@@ -94,7 +69,7 @@ def country_selection(request) :
     fig2 = px.pie(top_commodities_import, values='value', names='Commodity', hole=.3)
     fig2.update_traces(textposition='inside', textinfo='percent+label')
     fig2.update_layout(title=f'Top 6 Commodities Imported by {selected_country} and Others')
-    return render(request, 'country_selection.html', {'globe' : fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
+    return render(request, 'country_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
 
 def racing_bar_chart(request) :
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')

@@ -1,34 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Country Trade Analysis</title>
-    <style>
-        .pie-chart-container {
-            display: block;
-            /* justify-content: space-around; */
-            margin-top: 20px;
-        }
-        .pie-chart {
-            width: 100%;
-        }
-        .form-container {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .year-dropdown {
-            margin-right: 10px;
-        }
-        .submit-btn {
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div id="globe-chart">{{ globe | safe }}</div>
-    <h1>Country Trade Analysis by Commodity</h1>
+{% extends "base.html" %}
+{% load plotly_dash %}
+
+{% block content %}
+<style>
+    .pie-chart-container {
+        display: block;
+        /* justify-content: space-around; */
+        margin-top: 20px;
+    }
+
+    .pie-chart {
+        width: 100%;
+    }
+
+    .form-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .year-dropdown {
+        margin-right: 10px;
+    }
+
+    .submit-btn {
+        margin-left: 10px;
+    }
+</style>
+<h1>Country Trade Analysis by Commodity</h1>
+
+
+    <iframe id="my_iframe" src="/dash/app/dash_app/" style="
+
+    top: 0;
+    left: 0;
+    width:70%;
+    padding:auto;
+    aspect-ratio: 16/9;
+    " frameborder="0"
+        sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
 
     <!-- Form container for country selection and year dropdowns -->
     <div class="form-container">
@@ -36,11 +46,11 @@
         <label for="country-dropdown">Select Country:</label>
         <select id="country-dropdown" name="country">
             {% for country in country_values %}
-                {% if selected_country == country %}
-                    <option value="{{ country }}" selected>{{ country }}</option>
-                {% else %}
-                    <option value="{{ country }}">{{ country }}</option>
-                {% endif %}
+            {% if selected_country == country %}
+            <option value="{{ country }}" selected>{{ country }}</option>
+            {% else %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endif %}
             {% endfor %}
         </select>
 
@@ -48,7 +58,7 @@
         <label for="start-year" class="year-dropdown">Start Year:</label>
         <select id="start-year" name="start_year" class="year-dropdown">
             {% for year in year_values %}
-                <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+            <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
 
@@ -56,7 +66,7 @@
         <label for="end-year" class="year-dropdown">End Year:</label>
         <select id="end-year" name="end_year" class="year-dropdown">
             {% for year in year_values %}
-                <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
+            <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
 
@@ -87,7 +97,7 @@
 
     <script>
         // Event listener for submit button
-        document.getElementById('submit-btn').addEventListener('click', function(event) {
+        document.getElementById('submit-btn').addEventListener('click', function (event) {
             var selectedCountry = document.getElementById('country-dropdown').value;
             var selectedStartYear = document.getElementById('start-year').value;
             var selectedEndYear = document.getElementById('end-year').value;
@@ -100,20 +110,62 @@
         });
 
         // Event listener for toggle buttons
-        document.getElementById('toggle-export').addEventListener('change', function(event) {
-            if(document.getElementById('pie-chart-export').style.display == 'block')
+        document.getElementById('toggle-export').addEventListener('change', function (event) {
+            if (document.getElementById('pie-chart-export').style.display == 'block')
                 document.getElementById('pie-chart-export').style.display = 'none';
             else
                 document.getElementById('pie-chart-export').style.display = 'block'
 
         });
 
-        document.getElementById('toggle-import').addEventListener('change', function(event) {
-            if(document.getElementById('pie-chart-import').style.display == 'block')
+        document.getElementById('toggle-import').addEventListener('change', function (event) {
+            if (document.getElementById('pie-chart-import').style.display == 'block')
                 document.getElementById('pie-chart-import').style.display = 'none';
             else
                 document.getElementById('pie-chart-import').style.display = 'block'
         });
+
+        var iframe = document.getElementById('my_iframe');
+        // Get the iframe element
+
+        // Wait for the iframe to load
+        iframe.onload = function () {
+            // Access the document inside the iframe
+            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+            // Get the div with id 'react-entry-point'
+            var reactEntryPointDiv = iframeDocument.getElementById('react-entry-point');
+
+            // Create a MutationObserver to watch for changes in the react-entry-point div
+            var observer = new MutationObserver(function (mutationsList) {
+                for (var mutation of mutationsList) {
+                    if (mutation.type === 'childList') {
+                        // Get the selected-country div once it is available
+                        var selectedCountryDiv = iframeDocument.getElementById('selected-country');
+                        if (selectedCountryDiv) {
+
+                            var observer2 = new MutationObserver(function (mutationsList2) {
+                                for (var mutation2 of mutationsList2) {
+                                    if (mutation2.type === 'childList') {
+                                        // Trigger action when innerText of selected-country div changes
+                                        observer2.disconnect();
+                                        console.log('Selected country div text changed');
+                                        window.location.href = '/dashboard/country_selection/?country=' + selectedCountryDiv.innerText;
+                                    }
+                                }
+                            });
+
+                            observer2.observe(selectedCountryDiv, { childList: true, subtree: true });
+                            observer.disconnect();
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // Start observing changes in the react-entry-point div
+            observer.observe(reactEntryPointDiv, { childList: true, subtree: true });
+        };
     </script>
-</body>
-</html>
+
+    {% endblock content %}

@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from myapp.views import *
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include('myapp.urls')),
     # path('commodity_selection/', commodity_selection, name = 'commodity_selection'),
     path('dash/', include('django_plotly_dash.urls')),
+    path('', RedirectView.as_view(url='/dashboard/home', permanent=False)),
 ]
 
