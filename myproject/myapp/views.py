@@ -4,9 +4,10 @@ import plotly.express as px
 import json
 import numpy as np
 from myproject.settings import BASE_DIR
-from django.http import JsonResponse
+from django.conf import settings
 import bar_chart_race as bcr
 from . import dash_app
+import os
 
 # Create your views here.
 def home(request) :
@@ -53,11 +54,19 @@ def country_selection(request) :
     country_total_import = country_import_data.groupby('Commodity')['value'].sum().reset_index()
     top_commodities_import = country_total_import.nlargest(6, 'value')    
     
+    # print(top_commodities_export)
+
     other_value_export = country_total_export[~country_total_export['Commodity'].isin(top_commodities_export['Commodity'])]['value'].sum()
-    top_commodities_export.loc[len(top_commodities_export)] = ['Others', other_value_export]
+    # Create a new row as a dictionary
+    new_row = {'Commodity': ['OTHERS'], 'value': [other_value_export]}
+    # Append the new row to the DataFrame
+    top_commodities_export=pd.concat([top_commodities_export, pd.DataFrame(new_row)], ignore_index=True)
 
     other_value_import = country_total_import[~country_total_import['Commodity'].isin(top_commodities_import['Commodity'])]['value'].sum()
-    top_commodities_import.loc[len(top_commodities_import)] = ['Others', other_value_import]
+    # Create a new row as a dictionary
+    new_row = {'Commodity': ['OTHERS'], 'value': [other_value_import]}
+    # Append the new row to the DataFrame
+    top_commodities_import=pd.concat([top_commodities_import, pd.DataFrame(new_row)], ignore_index=True)
 
     # Create dummy DataFrame with the selected country
     dummy_df = pd.DataFrame({'country': [selected_country]})
@@ -86,38 +95,51 @@ def country_selection(request) :
         oceancolor="LightBlue"
     )
 
+    top_commodities_export['Shortened_Name'] = top_commodities_export['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
+    top_commodities_import['Shortened_Name'] = top_commodities_import['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
 
-    fig1 = px.pie(top_commodities_export, values='value', names='Commodity', hole=.3)
+    fig1 = px.pie(top_commodities_export, values='value', names='Shortened_Name',hover_name = 'Commodity', hole=.3)
     fig1.update_traces(textposition='inside', textinfo='percent+label')
     fig1.update_layout(title=f'Top 6 Commodities Exported by {selected_country} and Others')
 
-    fig2 = px.pie(top_commodities_import, values='value', names='Commodity', hole=.3)
+    fig2 = px.pie(top_commodities_import, values='value', names='Shortened_Name',hover_name = 'Commodity', hole=.3)
     fig2.update_traces(textposition='inside', textinfo='percent+label')
     fig2.update_layout(title=f'Top 6 Commodities Imported by {selected_country} and Others')
-    return render(request, 'country_selection.html', {'globe' : fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
 
-def racing_bar_chart(request) :
-    selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
-    start_year = int(request.GET.get('start_year', 2010))
-    end_year = int(request.GET.get('end_year', 2021))
+    country_export_data['year'] = pd.to_datetime(df['year'], format='%Y')
 
-    # Read the dataset
-    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2021_HS2_export.csv')
-    # Filter the dataset to only include the selected commodity
+    # Group the data by year and commodity to calculate the total export value for each commodity in each year
+    country_export_data_grouped = country_export_data.groupby(['year', 'Commodity'])['value'].sum().reset_index()
 
-    # Convert the 'year' column to datetime type
-    df['year'] = pd.to_datetime(df['year'], format='%Y')
+    # Sort the data for each year based on the total export value of commodities
+    country_export_data_sorted = country_export_data_grouped.sort_values(['year', 'value'], ascending=[True, False])
 
-    # Aggregate total trade for each country for each year
-    country_year_total = df.groupby(['country', pd.Grouper(key='year', freq='Y')])['value'].sum().unstack(fill_value=0)
+    # Initialize an empty list to store the top 10 commodities for each year
+    top_commodities_by_year = []
 
-    # Create the bar chart race
+    # Iterate over each year and select the top 10 commodities
+    for year in country_export_data_sorted['year'].unique():
+        top_commodities_by_year.append(country_export_data_sorted[country_export_data_sorted['year'] == year].head(10))
+
+    # Concatenate the dataframes to create a single dataframe containing the top 10 commodities for each year
+    top_commodities_df = pd.concat(top_commodities_by_year)
+
+    df_pivot = top_commodities_df.pivot(index='year', columns='Commodity', values='value')
+
+    # Create the Bar Chart Race
     bcr.bar_chart_race(
-        df=country_year_total, 
-        filename='trading_data_bar_chart_race.mp4',
-        orientation='h',  # Set orientation to horizontal (country names on y-axis)
-        title='Total Trade by Country over Time',  # Set title of the race
-        steps_per_period=10,  # Adjust speed: lower value makes it slower
-        period_length=1000,  # Adjust duration of each period in milliseconds
-        figsize=(8, 6)  # Set figure size
+        df=df_pivot,
+        filename='static/commodity_valuation_race.mp4',  # Output filename
+        orientation='h',  # Horizontal bars
+        n_bars=10,  # Number of bars to include in the chart
+        steps_per_period=10,  # Number of steps per year
+        period_length=500,  # Length of each period in milliseconds
+        title='Commodity Valuation Race',  # Title of the chart
+        figsize=(6, 4)  # Figure size
     )
+
+    video_path = os.path.join(settings.STATIC_URL, 'commodity_valuation_race.mp4')
+
+    return render(request, 'country_selection.html', {'globe' : fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'bcr' : video_path})
+
+   
