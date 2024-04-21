@@ -31,6 +31,7 @@ def commodity_selection(request) :
     return render(request, 'commodity_selection.html')
 
 def country_selection(request) :
+
     selected_country = request.GET.get('country', 'AFGHANISTAN')
     start_year = int(request.GET.get('start_year', 2010))
     end_year = int(request.GET.get('end_year', 2021))
@@ -38,12 +39,14 @@ def country_selection(request) :
     # Read the dataset
     df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
     df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+
     # Load geojson data
     with open(BASE_DIR / 'myapp/archive/countries.geo.json', 'r') as f:
         geojson_data = json.load(f)
 
     df['year'] = df['year'].astype(int)
     df2['year'] = df2['year'].astype(int)
+
     # Filter data for the selected country
     country_export_data = df[(df['country'] == selected_country) & (df['year'] >= start_year) & (df['year'] <= end_year)]
     country_import_data = df2[(df2['country'] == selected_country) & (df2['year'] >= start_year) & (df2['year'] <= end_year)]
@@ -63,37 +66,14 @@ def country_selection(request) :
     top_commodities_export=pd.concat([top_commodities_export, pd.DataFrame(new_row)], ignore_index=True)
 
     other_value_import = country_total_import[~country_total_import['Commodity'].isin(top_commodities_import['Commodity'])]['value'].sum()
+    
     # Create a new row as a dictionary
     new_row = {'Commodity': ['OTHERS'], 'value': [other_value_import]}
+
     # Append the new row to the DataFrame
     top_commodities_import=pd.concat([top_commodities_import, pd.DataFrame(new_row)], ignore_index=True)
 
-    # Create dummy DataFrame with the selected country
-    dummy_df = pd.DataFrame({'country': [selected_country]})
-
-    # Create choropleth map
-    fig = px.choropleth(
-        data_frame=dummy_df,
-        locations='country',
-        locationmode='country names',
-        color=[1],  # Dummy color value
-        hover_name='country',
-        geojson=geojson_data,
-        # color_continuous_scale=['blue'],  # Set color to highlight the selected country
-    )
-
-    fig.update_layout(
-        title='Selected Country: ' + selected_country,
-        height=800,
-        plot_bgcolor='rgba(0,0,0,0)',
-    )
-    fig.update_geos(
-        fitbounds='locations',
-        showcountries=True,
-        projection_type="orthographic",
-        showocean=True,
-        oceancolor="LightBlue"
-    )
+    dash_app.run_dash_app(None, df, selected_country, geojson_data)
 
     top_commodities_export['Shortened_Name'] = top_commodities_export['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
     top_commodities_import['Shortened_Name'] = top_commodities_import['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
@@ -140,6 +120,6 @@ def country_selection(request) :
 
     video_path = os.path.join(settings.STATIC_URL, 'commodity_valuation_race.mp4')
 
-    return render(request, 'country_selection.html', {'globe' : fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'bcr' : video_path})
+    return render(request, 'country_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'bcr' : video_path})
 
    

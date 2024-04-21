@@ -19,12 +19,14 @@ from django.urls import include, path
 from myapp.views import *
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include('myapp.urls')),
     # path('commodity_selection/', commodity_selection, name = 'commodity_selection'),
     path('dash/', include('django_plotly_dash.urls')),
+    path('', RedirectView.as_view(url='/dashboard/home', permanent=False)),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
