@@ -104,18 +104,19 @@ def country_selection(request) :
     # Concatenate the dataframes to create a single dataframe containing the top 10 commodities for each year
     top_commodities_df = pd.concat(top_commodities_by_year)
 
+    top_commodities_df['Commodity'] = top_commodities_df['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
     df_pivot = top_commodities_df.pivot(index='year', columns='Commodity', values='value')
 
     # Create the Bar Chart Race
     bcr.bar_chart_race(
         df=df_pivot,
         filename='static/commodity_valuation_race.mp4',  # Output filename
-        orientation='h',  # Horizontal bars
+        # orientation='h',  # Horizontal bars
         n_bars=10,  # Number of bars to include in the chart
         steps_per_period=10,  # Number of steps per year
-        period_length=500,  # Length of each period in milliseconds
+        period_length=1000,  # Length of each period in milliseconds
         title='Commodity Valuation Race',  # Title of the chart
-        figsize=(6, 4)  # Figure size
+        figsize=(10, 6),  # Figure size
     )
 
     video_path = os.path.join(settings.STATIC_URL, 'commodity_valuation_race.mp4')
