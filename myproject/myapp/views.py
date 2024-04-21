@@ -8,6 +8,8 @@ from django.conf import settings
 import bar_chart_race as bcr
 from . import dash_app
 import os
+import plotly.graph_objs as go
+
 
 # Create your views here.
 def home(request) :
@@ -57,8 +59,6 @@ def country_selection(request) :
     country_total_import = country_import_data.groupby('Commodity')['value'].sum().reset_index()
     top_commodities_import = country_total_import.nlargest(6, 'value')    
     
-    # print(top_commodities_export)
-
     other_value_export = country_total_export[~country_total_export['Commodity'].isin(top_commodities_export['Commodity'])]['value'].sum()
     # Create a new row as a dictionary
     new_row = {'Commodity': ['OTHERS'], 'value': [other_value_export]}
@@ -102,9 +102,10 @@ def country_selection(request) :
         top_commodities_by_year.append(country_export_data_sorted[country_export_data_sorted['year'] == year].head(10))
 
     # Concatenate the dataframes to create a single dataframe containing the top 10 commodities for each year
-    top_commodities_df = pd.concat(top_commodities_by_year)
+    top_commodities_df = pd.concat(top_commodities_by_year, ignore_index=True)
+    # top_commodities_df.to_csv(BASE_DIR/'myapp/archive/original.csv', index = False)
+    top_commodities_df['Commodity'] = top_commodities_df['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 character
 
-    top_commodities_df['Commodity'] = top_commodities_df['Commodity'].apply(lambda x: x[:20])  # Truncate to the first 20 characters
     df_pivot = top_commodities_df.pivot(index='year', columns='Commodity', values='value')
 
     # Create the Bar Chart Race
@@ -124,3 +125,27 @@ def country_selection(request) :
     return render(request, 'country_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'bcr' : video_path})
 
    
+def country_commodity_selection(request) :
+    selected_country = request.GET.get('country', 'RUSSIA')
+    selected_commodity = request.GET.get('sommodity', 'MEAT AND EDIBLE MEAT OFFAL.')
+    start_year = int(request.GET.get('start_year', 2010))
+    end_year = int(request.GET.get('end_year', 2021))
+
+     # Read the dataset
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+
+    # Filter data for the selected country
+    country_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == selected_commodity) & (df['year'] >= start_year) & (df['year'] <= end_year)]
+    country_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == selected_commodity) & (df2['year'] >= start_year) & (df2['year'] <= end_year)]
+
+     # Create a bar chart with export and import data using Plotly
+    # Create a line chart with export and import data
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=country_export_data['year'], y=country_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=country_import_data['year'], y=country_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
+    fig.update_layout(title=f'Export and Import Valuation of {selected_commodity} in {selected_country} ({start_year}-{end_year})',
+                      xaxis_title='Year',
+                      yaxis_title='Valuation')
+
+    return render(request, 'country_commodity_selection.html', {'bar_chart_html': fig.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'commodity_values' : df['Commodity'].unique()})
