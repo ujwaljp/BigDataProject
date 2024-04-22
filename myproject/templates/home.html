@@ -119,7 +119,7 @@
 
         if (event.target.checked) {
             // Display the video container
-            raceVideo.style.display = 'block';
+            raceVideo.style.display = 'flex';
         } else {
             // Hide the video container
             raceVideo.style.display = 'none';
@@ -167,10 +167,9 @@
         // Start observing changes in the react-entry-point div
         observer.observe(reactEntryPointDiv, { childList: true, subtree: true });
     };
-
+    var div_cleared = false;
     document.addEventListener('DOMContentLoaded', function() {
-        console.log("inside load")
-        fetch(`/dashboard/generate_video_home/?commodity=${encodeURIComponent('{{ selected_commodity }}')}`)
+        fetch(`/dashboard/generate_video_home/?commodity=${encodeURIComponent('{{ selected_commodity }}')}&trade_type=export`)
             .then(response => response.json())
             .then(data => {
                 const videoElement = document.createElement('video');
@@ -188,7 +187,34 @@
 
                 // Append video element to video container
                 videoContainer = document.getElementById('race-video')
-                videoContainer.textContent = ''; // Clear the text content
+                if(div_cleared == false){
+                    div_cleared = true;
+                    videoContainer.textContent = ''; // Clear the text content
+                }
+                videoContainer.appendChild(videoElement);
+            });
+            fetch(`/dashboard/generate_video_home/?commodity=${encodeURIComponent('{{ selected_commodity }}')}&trade_type=import`)
+            .then(response => response.json())
+            .then(data => {
+                const videoElement = document.createElement('video');
+                videoElement.width = 640;
+                videoElement.height = 480;
+                videoElement.controls = true;
+
+                // Set video source and attributes
+                const sourceElement = document.createElement('source');
+                sourceElement.src = data.video_path;
+                sourceElement.type = 'video/mp4';
+
+                // Append source element to video element
+                videoElement.appendChild(sourceElement);
+
+                // Append video element to video container
+                videoContainer = document.getElementById('race-video')
+                if(div_cleared == false){
+                    div_cleared = true;
+                    videoContainer.textContent = ''; // Clear the text content
+                } // Clear the text content
                 videoContainer.appendChild(videoElement);
             });
     });

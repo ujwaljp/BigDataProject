@@ -50,7 +50,7 @@
 <!-- Second dropdown for import commodity -->
 <div class="form-container" id="import-commodity-container" style="display: block;">
     <!-- Import commodity selection dropdown menu -->
-    <label for="import-commodity-dropdown">Select Import Commodity:</label>
+    <label for="import-commodity-dropdown">Top 6 Import Commodity:</label>
     <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
         {% for commodity in import_commodity_values %}
         <option value="{{ commodity }}">{{ commodity }}</option>
@@ -61,7 +61,7 @@
 <!-- Third dropdown for export commodity -->
 <div class="form-container" id="export-commodity-container" style="display : block;">
     <!-- Export commodity selection dropdown menu -->
-    <label for="export-commodity-dropdown">Select Export Commodity:</label>
+    <label for="export-commodity-dropdown">Top 6 Export Commodity:</label>
     <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
         {% for commodity in export_commodity_values %}
         <option value="{{ commodity }}">{{ commodity }}</option>
