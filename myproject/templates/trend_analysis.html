@@ -60,6 +60,15 @@
     </div>
 </div>
 
+<!-- Chart container -->
+<div class="chart-container">
+    <!-- Render the chart -->
+    <div id="company-chart" class="chart d-flex flex-column justify-content-center">
+        {{ company_chart_html | safe }}
+    </div>
+</div>
+
+
 <script>
     var url, sector, company;
 

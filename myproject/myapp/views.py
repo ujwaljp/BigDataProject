@@ -11,6 +11,9 @@ import os
 import plotly.graph_objs as go
 from django.http import JsonResponse
 import json
+import yfinance as yf
+
+
 
 # Create your views here.
 def home(request) :
@@ -284,43 +287,118 @@ def country_commodity_selection(request) :
         return render(request, 'country_commodity_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : top_commodities_import['Commodity'].unique(), 'export_commodity_values' : top_commodities_export['Commodity'].unique(), 'import_commodity' :top_commodities_import['Commodity'].unique()[0], 'export_commodity' :top_commodities_export['Commodity'].unique()[0]})
     
 
-def trend_analysis(request):
-    selected_sector = request.GET.get('sector', 'Construction')
+# Function to extract close prices for specific dates from Yahoo Finance
+def extract_close_prices(ticker):
+    # Fetch OHLC data from Yahoo Finance
+    try:
+        data = yf.download(ticker, start='2010-03-31', end='2021-12-31', interval='3mo')['Close']
+        # Check if any data is missing
+        if data.empty or data.isnull().values.any():
+            return None
+        else:
+            return data
+    except ValueError:
+        return None
 
-     # Read the dataset
-    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+# Function to calculate yearly average close price
+def calculate_yearly_avg_close(close_prices):
+    yearly_avg_close = close_prices.groupby(close_prices.index.year).mean().reset_index()
+    yearly_avg_close.columns = ['year', 'value']
+    return yearly_avg_close
 
-    sector_df = pd.read_csv('archive/categories.csv')
-    companies_for_sector = (json.loads('archive/companies.json'))[selected_sector]
+# Function to get tickers based on category
+def get_category_tickers(category):
+    with open(BASE_DIR / 'myapp/archive/companies.json') as f :
+        data = json.load(f)
+    return data[category]
 
-    # Filter commodities belonging to the given category
-    filtered_commodities = sector_df[sector_df['Category'] == selected_sector]['Commodity']
+# Function to get stock data based on category
+def find_stock_data(category):
+    tickers = get_category_tickers(category)
+    ticker_list = []
+    company_list = []
+    counter = 0
+    for ticker in tickers :
+        if counter == 3 :
+            break 
+        # Extract close prices for specific dates from Yahoo Finance
+        close_prices = extract_close_prices(ticker)
 
-    # Filter import data based on filtered commodities
-    filtered_import_data = df2[df2['Commodity'].isin(filtered_commodities)]
-
-    # Group by year and sum the values for each year
-    total_import_per_year = filtered_import_data.groupby('year')['value'].sum().reset_index()
-
-    # Filter export data based on filtered commodities
-    filtered_export_data = df[df['Commodity'].isin(filtered_commodities)]
-
-    # Group by year and sum the values for each year
-    total_export_per_year = filtered_export_data.groupby('year')['value'].sum().reset_index()
-
-    if 'company' in request.GET :
-        selected_company = request.GET.get('company')
+        # Calculate yearly average close price if available
+        if close_prices is not None:
+            yearly_avg_close = calculate_yearly_avg_close(close_prices)
+            # if not yearly_avg_close.empty:
+            #     if len(yearly_avg_close) == 14:
+            #         print(f"Yearly average close prices for {ticker}:")
+            #         print(yearly_avg_close)
+            #     else:
+            #         print(f"Yearly average close prices for {ticker}:")
+            #         print(yearly_avg_close)
+            ticker_list.append(yearly_avg_close)
+        company_list.append(yf.Ticker(ticker).info['longName'])
+        counter += 1
         
-        return
-    else :
+    return ticker_list, company_list
+
+
+
+def trend_analysis(request):
+    
+    sector_df = pd.read_csv(BASE_DIR / 'myapp/archive/categories.csv')
+
+    if 'sector' in request.GET :
+        selected_sector = request.GET.get('sector', 'Construction')
+
+        # Read the dataset
+        df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
+        df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+
+        # Filter commodities belonging to the given category
+        filtered_commodities = sector_df[sector_df['Category'] == selected_sector]['Commodity']
+
+        # Filter import data based on filtered commodities
+        filtered_import_data = df2[df2['Commodity'].isin(filtered_commodities)]
+
+        # Group by year and sum the values for each year
+        total_import_per_year = filtered_import_data.groupby('year')['value'].sum().reset_index()
+
+        # Filter export data based on filtered commodities
+        filtered_export_data = df[df['Commodity'].isin(filtered_commodities)]
+
+        # Group by year and sum the values for each year
+        total_export_per_year = filtered_export_data.groupby('year')['value'].sum().reset_index()
+
+        stock_data, company_list = find_stock_data(selected_sector)
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=total_export_per_year['year'], y=total_export_per_year['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
         fig.add_trace(go.Scatter(x=total_import_per_year['year'], y=total_import_per_year['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
-        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({start_year}-{end_year})',
+        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
                         yaxis_title='Valuation')
+        
+        fig1 = go.Figure()
+        fig1.add_trace(go.Scatter(x=stock_data[0]['year'], y=stock_data[0]['value'], mode='lines+markers', name=company_list[0], line=dict(color='green')))
 
-        return render(request, 'trend_analysis.html', {'line_chart_html': fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_values' : companies_for_sector})
+        if len(stock_data) > 1 :
+            fig1.add_trace(go.Scatter(x=stock_data[1]['year'], y=stock_data[1]['value'], mode='lines+markers', name= company_list[1], line=dict(color='black')))
+
+        if len(stock_data) > 2 :
+            fig1.add_trace(go.Scatter(x=stock_data[2]['year'], y=stock_data[2]['value'], mode='lines+markers', name=company_list[2], line=dict(color='red')))
+
+        fig1.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
+                        xaxis_title='Year',
+                        yaxis_title='Valuation')
+        
+        return render(request, 'trend_analysis.html', {'line_chart_html' : fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_chart_html' : fig1.to_html(), 'company_values' : company_list})
+
+    elif 'company' in request.GET :
+        selected_sector = request.GET.get('sector', 'Construction')
+        selected_company = request.GET.get('company')
+        
+        return render(request, 'trend_analysis.html', {'line_chart_html' : fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_chart_html' : fig1.to_html(), 'company_values' : company_list, 'selected_company' : selected_company})
+    
+    else :
+        return render(request, 'trend_analysis.html', {'sector_values' : sector_df['Category'].unique()})
     
     
