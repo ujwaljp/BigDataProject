@@ -29,7 +29,15 @@
     }
 </style>
 
-<h1 class="p-3 text-center">Country Trade Analysis by Commodity</h1>
+<div class="d-flex justify-content-between">
+
+    <h1 class="p-3 text-center">Country Trade Analysis by Commodity</h1>
+    <div class="d-flex align-items-center form-check form-switch pe-5 fs-5">
+        <input class="form-check-input" type="checkbox" id="country_commodity">
+        <label class="form-check-label ms-2" for="country_commodity">Country</label>
+    </div>
+    
+</div>
 
 <div class="d-flex p-3 justify-content-center flex-column">
     <!-- Form container for country selection -->
@@ -50,7 +58,7 @@
 
     <div class="d-flex justify-content-between">
         <!-- Second dropdown for import commodity -->
-        <div class="form-container m-4 justify-content-center d-flex" id="import-commodity-container" style="display: block;">
+        <div class="form-container justify-content-center d-flex" id="import-commodity-container" style="display: block;">
             <!-- Import commodity selection dropdown menu -->
             <label class="me-2" for="import-commodity-dropdown">Select Import Commodity:</label>
             <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
@@ -61,7 +69,7 @@
         </div>
 
         <!-- Third dropdown for export commodity -->
-        <div class="form-container m-4 justify-content-center d-flex" id="export-commodity-container" style="display : block;">
+        <div class="form-container justify-content-center d-flex" id="export-commodity-container" style="display : block;">
             <!-- Export commodity selection dropdown menu -->
             <label class="me-2" for="export-commodity-dropdown">Select Export Commodity:</label>
             <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
@@ -78,6 +86,22 @@
     <div class="d-flex m-5 justify-content-center">
         <button type="button" id="export-submit-btn" class="submit-btn btn btn-primary">Submit</button>
     </div>
+</div>
+
+<div class="d-flex justify-content-around" style="margin-right:10px">
+    <div>
+    <label class=" m-1" for="commodity_selection">Select Commodity</label>
+    <select id="commodity_selection" name="commodity_selection" value="{{export_commodity}}" class="form-select-sm">
+        {% for commodity in commodity_values %}
+            {% if commodity == export_commodity %}
+                <option value="{{ commodity }}" selected>{{ commodity }}</option>
+            {% else %}
+                <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</div>
+    <button type="button" id="update-btn" class="submit-btn btn btn-secondary">Update</button>
 </div>
 
 <!-- Chart container -->
@@ -109,6 +133,18 @@
         window.location.href = url;
     });
 
+    document.getElementById('update-btn').addEventListener('click', function (event) {
+        var selectedCountry = document.getElementById('country-dropdown').value;
+        var selectedCommodity = document.getElementById('commodity_selection').value;
+        url = '/dashboard/country_commodity_selection/?country=' + encodeURIComponent(selectedCountry) + '&commodity=' + encodeURIComponent(selectedCommodity);
+        window.location.href = url;
+    })
+    document.getElementById('country_commodity').addEventListener('change', function (event) {
+        var url = '/dashboard/commodity_country_selection';
+        document.getElementById('country_commodity').disabled = true;
+        window.location.href = url;
+        // console.log('value changed')
+    });
     
 </script>
 

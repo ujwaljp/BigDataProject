@@ -217,38 +217,10 @@ def country_selection(request) :
 
     return render(request, 'country_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
 
-   
-def country_commodity_selection(request) :
-    selected_country = request.GET.get('country', 'RUSSIA')
-    selected_commodity = request.GET.get('sommodity', 'MEAT AND EDIBLE MEAT OFFAL.')
-    start_year = int(request.GET.get('start_year', 2010))
-    end_year = int(request.GET.get('end_year', 2021))
-
-     # Read the dataset
-    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
-
-    # Filter data for the selected country
-    country_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == selected_commodity) & (df['year'] >= start_year) & (df['year'] <= end_year)]
-    country_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == selected_commodity) & (df2['year'] >= start_year) & (df2['year'] <= end_year)]
-
-     # Create a bar chart with export and import data using Plotly
-    # Create a line chart with export and import data
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=country_export_data['year'], y=country_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=country_import_data['year'], y=country_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
-    fig.update_layout(title=f'Export and Import Valuation of {selected_commodity} in {selected_country} ({start_year}-{end_year})',
-                      xaxis_title='Year',
-                      yaxis_title='Valuation')
-
-    return render(request, 'country_commodity_selection.html', {'bar_chart_html': fig.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'commodity_values' : df['Commodity'].unique()})
-
-
 def country_commodity_selection(request) :
     selected_country = request.GET.get('country', 'RUSSIA')
     start_year = 2010
     end_year = 2021
-
      # Read the dataset
     df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
     df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
@@ -262,29 +234,66 @@ def country_commodity_selection(request) :
 
     country_total_import = country_import_data.groupby('Commodity')['value'].sum().reset_index()
     top_commodities_import = country_total_import.nlargest(6, 'value')
-
-    if 'export_commodity' in request.GET or 'import_commodity' in request.GET :
         # Create a bar chart with export and import data using Plotly
         # Create a line chart with export and import data
-        import_commodity = request.GET.get('import_commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
-        export_commodity = request.GET.get('export_commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
+    import_commodity_values = top_commodities_import['Commodity'].unique()
+    export_commodity_values = top_commodities_export['Commodity'].unique()
+    import_commodity = request.GET.get('import_commodity', import_commodity_values[0])
+    export_commodity = request.GET.get('export_commodity', export_commodity_values[0])
+    if( 'commodity' in request.GET):
+        import_commodity = export_commodity = request.GET.get('commodity')
 
-        country_commodity_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == export_commodity)]
-        country_commodity_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == import_commodity)]
+    country_commodity_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == export_commodity)]
+    country_commodity_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == import_commodity)]
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=country_commodity_export_data['year'], y=country_commodity_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
-        fig.add_trace(go.Scatter(x=country_commodity_import_data['year'], y=country_commodity_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
-        fig.update_layout(title=f'Export and Import Valuation of {import_commodity} and {export_commodity} in {selected_country} ({start_year}-{end_year})',
-                        xaxis_title='Year',
-                        yaxis_title='Valuation')
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=country_commodity_export_data['year'], y=country_commodity_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=country_commodity_import_data['year'], y=country_commodity_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
+    fig.update_layout(title=f'Export and Import Valuation of {import_commodity} and {export_commodity} in {selected_country} ({start_year}-{end_year})',
+                    xaxis_title='Year',
+                    yaxis_title='Valuation')
+    
+    
+    return render(request, 'country_commodity_selection.html', {'line_chart_html': fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : import_commodity_values, 'import_commodity' : import_commodity, 'export_commodity' : export_commodity, 'export_commodity_values': export_commodity_values, 'commodity_values': df['Commodity'].unique()})
         
-        return render(request, 'country_commodity_selection.html', {'line_chart_html': fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : top_commodities_import['Commodity'].unique(), 'export_commodity_values' : top_commodities_export['Commodity'].unique(), 'import_commodity' : import_commodity, 'export_commodity' : export_commodity})
-        
-    else :
-        # Group by country and sum total trade value    
+def commodity_country_selection(request) :
+    selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
+    start_year = 2010
+    end_year = 2021
+     # Read the dataset
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
 
-        return render(request, 'country_commodity_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : top_commodities_import['Commodity'].unique(), 'export_commodity_values' : top_commodities_export['Commodity'].unique(), 'import_commodity' :top_commodities_import['Commodity'].unique()[0], 'export_commodity' :top_commodities_export['Commodity'].unique()[0]})
+    # Filter data for the selected commodity
+    commodity_export_data = df[(df['Commodity'] == selected_commodity)]
+    commodity_import_data = df2[(df2['Commodity'] == selected_commodity)]
+
+    commodity_total_export = commodity_export_data.groupby('country')['value'].sum().reset_index()
+    top_commodities_export = commodity_total_export.nlargest(6, 'value')
+
+    commodity_total_import = commodity_import_data.groupby('country')['value'].sum().reset_index()
+    top_commodities_import = commodity_total_import.nlargest(6, 'value')
+        # Create a bar chart with export and import data using Plotly
+        # Create a line chart with export and import data
+    import_country_values = top_commodities_import['country'].unique()
+    export_country_values = top_commodities_export['country'].unique()
+    import_country = request.GET.get('import_country', import_country_values[0])
+    export_country = request.GET.get('export_country', export_country_values[0])
+    if('country' in request.GET):
+        import_country = export_country = request.GET.get('country')
+
+    commodity_country_export_data = df[(df['Commodity'] == selected_commodity) & (df['country'] == export_country)]
+    commodity_country_import_data = df2[(df2['Commodity'] == selected_commodity) & (df2['country'] == import_country)]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=commodity_country_export_data['year'], y=commodity_country_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=commodity_country_import_data['year'], y=commodity_country_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
+    fig.update_layout(title=f'Export and Import Valuation of {import_country} and {export_country} in {selected_commodity} ({start_year}-{end_year})',
+                    xaxis_title='Year',
+                    yaxis_title='Valuation')
+    
+    
+    return render(request, 'commodity_country_selection.html', {'line_chart_html': fig.to_html(), 'commodity_values' : df['Commodity'].unique(), 'selected_commodity' : selected_commodity, 'import_country_values' : import_country_values, 'import_country' : import_country, 'export_country' : export_country, 'export_country_values': export_country_values, 'country_values': df['country'].unique()})
     
 
 # Function to extract close prices for specific dates from Yahoo Finance

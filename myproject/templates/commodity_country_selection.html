@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .year-dropdown {
+        margin-right: 10px;
+    }
+
+    .submit-btn {
+        margin-left: 10px;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+    }
+
+    .chart {
+        width: 100%;
+    }
+
+    .country-dropdown {
+        width: 500px;
+    }
+</style>
+
+<div class="d-flex justify-content-between">
+
+    <h1 class="p-3 text-center">Commodity Trade Analysis by Country</h1>
+    <div class="d-flex align-items-center form-check form-switch pe-5 fs-5">
+        <input class="form-check-input" type="checkbox" id="country_commodity" checked>
+        <label class="form-check-label ms-2" for="country_commodity">Commodity</label>
+    </div>
+    
+</div>
+
+<div class="d-flex p-3 justify-content-center flex-column">
+    <!-- Form container for commodity selection -->
+    <div class="form-container m-4 justify-content-center d-flex">
+        <!-- commodity selection dropdown menu -->
+        <label class="me-2" for="commodity-dropdown">Select Commodity:</label>
+        <select id="commodity-dropdown" name="commodity">
+            {% for commodity in commodity_values %}
+            {% if selected_commodity == commodity %}
+            <option value="{{ commodity }}" selected>{{ commodity }}</option>
+            {% else %}
+            <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <!-- Second dropdown for import country -->
+        <div class="form-container justify-content-center d-flex" id="import-country-container" style="display: block;">
+            <!-- Import country selection dropdown menu -->
+            <label class="me-2" for="import-country-dropdown">Select Import Country:</label>
+            <select id="import-country-dropdown" name="import-country" class="country-dropdown" value="{{import_country}}">
+                {% for country in import_country_values %}
+                <option value="{{ country }}">{{ country }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Third dropdown for export country -->
+        <div class="form-container justify-content-center d-flex" id="export-country-container" style="display : block;">
+            <!-- Export country selection dropdown menu -->
+            <label class="me-2" for="export-country-dropdown">Select Export Country:</label>
+            <select id="export-country-dropdown" name="export-country" class="country-dropdown" value="{{export_country}}">
+                {% for country in export_country_values %}
+                <option value="{{ country }}">{{ country }}</option>
+                {% endfor %}
+            </select>
+            <!-- Export country submit button -->
+        </div>
+    </div>
+
+    
+
+    <div class="d-flex m-5 justify-content-center">
+        <button type="button" id="export-submit-btn" class="submit-btn btn btn-primary">Submit</button>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between" style="padding:0 40px">
+    <div>
+    <label class=" m-1" for="country_selection">Select Country</label>
+    <select id="country_selection" name="country_selection" value="{{export_country}}" class="form-select-sm">
+        {% for country in country_values %}
+            {% if country == export_country %}
+                <option value="{{ country }}" selected>{{ country }}</option>
+            {% else %}
+                <option value="{{ country }}">{{ country }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</div>
+    <button type="button" id="update-btn" class="submit-btn btn btn-secondary">Update</button>
+</div>
+
+<!-- Chart container -->
+<div class="chart-container">
+    <!-- Render the chart -->
+    <div id="chart" class="chart d-flex flex-column justify-content-center">
+        {{ line_chart_html | safe }}
+    </div>
+</div>
+
+<script>
+    // Event listener for submit button
+    var url, export_, import_;
+
+    document.getElementById('export-submit-btn').addEventListener('click', function (event) {
+        var selectedcommodity = document.getElementById('commodity-dropdown').value;
+        import_ = document.getElementById('import-country-dropdown').value;
+        export_ = document.getElementById('export-country-dropdown').value;
+        // Redirect with selected parameters
+        url = '/dashboard/commodity_country_selection/?commodity=' + encodeURIComponent(selectedcommodity) + '&import_country=' + encodeURIComponent(import_) + '&export_country=' + encodeURIComponent(export_);
+        window.location.href = url;
+    });
+
+    // Event listener for commodity dropdown change
+    document.getElementById('commodity-dropdown').addEventListener('change', function (event) {
+        // Show the import country dropdown
+        var selectedcommodity = document.getElementById('commodity-dropdown').value;
+        url = '/dashboard/commodity_country_selection/?commodity=' + encodeURIComponent(selectedcommodity);
+        window.location.href = url;
+    });
+
+    document.getElementById('update-btn').addEventListener('click', function (event) {
+        var selectedcommodity = document.getElementById('commodity-dropdown').value;
+        var selectedcountry = document.getElementById('country_selection').value;
+        url = '/dashboard/commodity_country_selection/?commodity=' + encodeURIComponent(selectedcommodity) + '&country=' + encodeURIComponent(selectedcountry);
+        window.location.href = url;
+    })
+    document.getElementById('country_commodity').addEventListener('change', function (event) {
+        var url = '/dashboard/country_commodity_selection';
+        document.getElementById('country_commodity').disabled = true;
+        window.location.href = url;
+        // console.log('value changed')
+    });
+    
+</script>
+
+{% endblock content %}

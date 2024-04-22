@@ -38,8 +38,8 @@
 <form class="p-2 d-flex justify-content-center">
 
     <div class="d-flex justify-content-center" style="width: 30%;">
-        <label for="commodity-form" class="form-label pe-2 m-0">Select Commodity:</label>
-        <select id="commodity-dropdown" name="commodity" style="width: 35%;">
+        <label for="commodity-form" class="me-2">Select Commodity:</label>
+        <select id="commodity-dropdown" name="commodity" style="width: 35%;" class="form-select">
             {% for commodity in commodity_values %}
             {% if selected_commodity == commodity %}
             <option value="{{ commodity }}" selected>{{ commodity }}</option>
@@ -51,7 +51,7 @@
     </div>
     <div class="d-flex justify-content-center">
         <label for="start-year" class="form-label pe-2 m-0">Start Year:</label>
-        <select id="start-year" name="start_year" class="year-dropdown">
+        <select id="start-year" name="start_year" class="year-dropdown form-select">
             {% for year in year_values %}
             <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
@@ -59,7 +59,7 @@
 
         <!-- End year dropdown menu -->
         <label for="end-year" class="year-dropdown pe-2 m-0">End Year:</label>
-        <select id="end-year" name="end_year" class="year-dropdown">
+        <select id="end-year" name="end_year" class="year-dropdown form-select">
             {% for year in year_values %}
             <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
@@ -90,7 +90,7 @@
 <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
 
 <!-- Video container for the bar chart race -->
-<div id="race-video" class="video-container video-container d-flex justify-content-center mb-5">
+<div id="race-video" class="video-container video-container mb-5">
     Video is being prepared...
 </div>
 <script>
@@ -108,32 +108,32 @@
     });
 
     // Event listener for toggle buttons
-    document.getElementById('toggle-export').addEventListener('change', function (event) {
-        if (document.getElementById('pie-chart-export').style.display == 'block')
-            document.getElementById('pie-chart-export').style.display = 'none';
-        else
-            document.getElementById('pie-chart-export').style.display = 'block'
+    // document.getElementById('toggle-export').addEventListener('change', function (event) {
+    //     if (document.getElementById('pie-chart-export').style.display == 'block')
+    //         document.getElementById('pie-chart-export').style.display = 'none';
+    //     else
+    //         document.getElementById('pie-chart-export').style.display = 'block'
 
-    });
+    // });
 
-    document.getElementById('toggle-import').addEventListener('change', function (event) {
-        if (document.getElementById('pie-chart-import').style.display == 'block')
-            document.getElementById('pie-chart-import').style.display = 'none';
-        else
-            document.getElementById('pie-chart-import').style.display = 'block'
-    });
+    // document.getElementById('toggle-import').addEventListener('change', function (event) {
+    //     if (document.getElementById('pie-chart-import').style.display == 'block')
+    //         document.getElementById('pie-chart-import').style.display = 'none';
+    //     else
+    //         document.getElementById('pie-chart-import').style.display = 'block'
+    // });
 
-    document.getElementById('toggle-race').addEventListener('change', function (event) {
-        var raceVideo = document.getElementById('race-video');
+    // document.getElementById('toggle-race').addEventListener('change', function (event) {
+    //     var raceVideo = document.getElementById('race-video');
 
-        if (event.target.checked) {
-            // Display the video container
-            raceVideo.style.display = 'flex';
-        } else {
-            // Hide the video container
-            raceVideo.style.display = 'none';
-        }
-    });
+    //     if (event.target.checked) {
+    //         // Display the video container
+    //         raceVideo.style.display = 'flex';
+    //     } else {
+    //         // Hide the video container
+    //         raceVideo.style.display = 'none';
+    //     }
+    // });
 
     var iframe = document.getElementById('my_iframe');
     // Get the iframe element
