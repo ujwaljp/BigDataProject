@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+    }
+
+    .chart {
+        width: 100%;
+    }
+
+    .sector-dropdown {
+        width: 500px;
+    }
+</style>
+
+<h1 class="p-3 text-center">Economic Sector Analysis by Company</h1>
+
+<div class="d-flex p-3 justify-content-center flex-column">
+    <!-- Form container for economic sector selection -->
+    <div class="form-container m-4 justify-content-center d-flex">
+        <!-- Economic sector selection dropdown menu -->
+        <label class="me-2" for="sector-dropdown">Select Economic Sector:</label>
+        <select id="sector-dropdown" name="sector">
+            {% for sector in sector_values %}
+            <option value="{{ sector }}">{{ sector }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Second dropdown for company selection -->
+    <div class="form-container m-4 justify-content-center d-flex" id="company-container" style="display: block;">
+        <!-- Company selection dropdown menu -->
+        <label class="me-2" for="company-dropdown">Select Company:</label>
+        <select id="company-dropdown" name="company" class="commodity-dropdown" value="{{company}}">
+            {% for company in company_values %}
+            <option value="{{ company }}">{{ company }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Submit button -->
+    <div class="d-flex m-5 justify-content-center">
+        <button type="button" id="submit-btn" class="submit-btn btn btn-primary">Submit</button>
+    </div>
+</div>
+
+<!-- Chart container -->
+<div class="chart-container">
+    <!-- Render the chart -->
+    <div id="chart" class="chart d-flex flex-column justify-content-center">
+        {{ line_chart_html | safe }}
+    </div>
+</div>
+
+<script>
+    var url, sector, company;
+
+    document.getElementById('submit-btn').addEventListener('click', function (event) {
+        sector = document.getElementById('sector-dropdown').value;
+        company = document.getElementById('company-dropdown').value;
+        
+        // Redirect with selected parameters
+        url = '/dashboard/trend_analysis/?sector=' + encodeURIComponent(sector) + '&company=' + encodeURIComponent(company);
+        window.location.href = url;
+    });
+
+    // Event listener for sector dropdown change
+    document.getElementById('sector-dropdown').addEventListener('change', function (event) {
+        // Show the company dropdown
+        sector = document.getElementById('sector-dropdown').value;
+        url = '/dashboard/trend_analysis/?sector=' + encodeURIComponent(sector)
+        window.location.href = url;
+    });
+</script>
+
+{% endblock content %}

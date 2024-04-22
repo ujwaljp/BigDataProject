@@ -13,4 +13,6 @@ urlpatterns = [
     path('generate_video_country/<str:country>', views.running_bar_chart_country, name = 'generate_chart'),
     path('generate_video_home/', views.running_bar_chart_home, name = 'generate_video'),
     path('generate_video_home/<str:commodity>', views.running_bar_chart_home, name = 'generate_video'),
+    path('trend_analysis/', views.trend_analysis, name = 'trend_analysis'),
+    path('trend_analysis/<str:sector>', views.trend_analysis, name = 'trend_analysis'),
 ]

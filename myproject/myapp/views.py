@@ -10,6 +10,7 @@ from . import dash_app
 import os
 import plotly.graph_objs as go
 from django.http import JsonResponse
+import json
 
 # Create your views here.
 def home(request) :
@@ -262,7 +263,6 @@ def country_commodity_selection(request) :
     if 'export_commodity' in request.GET or 'import_commodity' in request.GET :
         # Create a bar chart with export and import data using Plotly
         # Create a line chart with export and import data
-        print("jxwh,kghwf,ghgrkfb")
         import_commodity = request.GET.get('import_commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
         export_commodity = request.GET.get('export_commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
 
@@ -282,3 +282,45 @@ def country_commodity_selection(request) :
         # Group by country and sum total trade value    
 
         return render(request, 'country_commodity_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : top_commodities_import['Commodity'].unique(), 'export_commodity_values' : top_commodities_export['Commodity'].unique(), 'import_commodity' :top_commodities_import['Commodity'].unique()[0], 'export_commodity' :top_commodities_export['Commodity'].unique()[0]})
+    
+
+def trend_analysis(request):
+    selected_sector = request.GET.get('sector', 'Construction')
+
+     # Read the dataset
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+
+    sector_df = pd.read_csv('archive/categories.csv')
+    companies_for_sector = (json.loads('archive/companies.json'))[selected_sector]
+
+    # Filter commodities belonging to the given category
+    filtered_commodities = sector_df[sector_df['Category'] == selected_sector]['Commodity']
+
+    # Filter import data based on filtered commodities
+    filtered_import_data = df2[df2['Commodity'].isin(filtered_commodities)]
+
+    # Group by year and sum the values for each year
+    total_import_per_year = filtered_import_data.groupby('year')['value'].sum().reset_index()
+
+    # Filter export data based on filtered commodities
+    filtered_export_data = df[df['Commodity'].isin(filtered_commodities)]
+
+    # Group by year and sum the values for each year
+    total_export_per_year = filtered_export_data.groupby('year')['value'].sum().reset_index()
+
+    if 'company' in request.GET :
+        selected_company = request.GET.get('company')
+        
+        return
+    else :
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=total_export_per_year['year'], y=total_export_per_year['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
+        fig.add_trace(go.Scatter(x=total_import_per_year['year'], y=total_import_per_year['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
+        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({start_year}-{end_year})',
+                        xaxis_title='Year',
+                        yaxis_title='Valuation')
+
+        return render(request, 'trend_analysis.html', {'line_chart_html': fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_values' : companies_for_sector})
+    
+    
