@@ -81,7 +81,7 @@ def update_heatmap(selected_commodity):
                 "ticktext": np.expm1(ticks).round(3),
             }
         },
-        height = 800,
+        height = 500,
         plot_bgcolor='rgba(0,0,0,0)' 
     )
     fig.update_geos(

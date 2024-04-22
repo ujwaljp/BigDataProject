@@ -3,20 +3,23 @@
 
 {% block content %}
 
-<h1>Commodity Trade Analysis by Country</h1>
+<div class="d-flex justify-content-between">
 
-<div class="form-check form-switch">
-    {% if globe_type == 'export' %}
-        <input class="form-check-input" type="checkbox" id="export_import" checked>
-    {% else %}
-        <input class="form-check-input" type="checkbox" id="export_import">
-    {% endif %}
-    <label class="form-check-label" for="flexSwitchCheckDefault"> {{ globe_type }}</label>
+    <h1 class="p-3 text-center">Commodity Trade Analysis by Country</h1>
+    <div class="d-flex align-items-center form-check form-switch pe-5 fs-5">
+        {% if globe_type == 'export' %}
+            <input class="form-check-input" type="checkbox" id="export_import" checked>
+        {% else %}
+            <input class="form-check-input" type="checkbox" id="export_import">
+        {% endif %}
+        <label class="form-check-label ms-2" for="export_import">{{ globe_type }}</label>
+    </div>
+    
 </div>
 
-<div style="
+<div class="justify-content-center d-flex flex-column" style="
     position: relative;
-    padding-bottom: 60.0%;
+    padding-bottom: 30.0%;
     height: 0;
     overflow:hidden;
     ">
@@ -30,48 +33,52 @@
         sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
 </div>
 
-<form>
-    <label for="commodity-form" class="form-label">Select Commodity:</label>
-    <select id="commodity-dropdown" name="commodity">
-        {% for commodity in commodity_values %}
-        {% if selected_commodity == commodity %}
-        <option value="{{ commodity }}" selected>{{ commodity }}</option>
-        {% else %}
-        <option value="{{ commodity }}">{{ commodity }}</option>
-        {% endif %}
-        {% endfor %}
-    </select>
-    <label for="start-year" class="form-label">Start Year:</label>
-    <select id="start-year" name="start_year" class="year-dropdown">
-        {% for year in year_values %}
-        <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
-        {% endfor %}
-    </select>
+<hr class="border ms-5 mb-5 border-3 opacity-100" style="width: 95%;">
 
-    <!-- End year dropdown menu -->
-    <label for="end-year" class="year-dropdown">End Year:</label>
-    <select id="end-year" name="end_year" class="year-dropdown">
-        {% for year in year_values %}
-        <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
-        {% endfor %}
-    </select>
+<form class="p-2 d-flex justify-content-center">
 
-    <!-- Submit button -->
-    <button type="button" id="submit-btn" class="submit-btn">Submit</button>
-    <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-        <input type="checkbox" class="btn-check" id="toggle-export" name="pie-chart" value="export" checked>
-        <label class="btn btn-outline-primary" for="toggle-export">Export</label>
-        <input type="checkbox" class="btn-check" id="toggle-import" name="pie-chart" value="import" checked>
-        <label class="btn btn-outline-primary" for="toggle-import">Import</label>
-        <input type="checkbox" class="btn-check" id="toggle-race" name="race-chart" value="race">
-        <label class="btn btn-outline-primary" for="toggle-race">Display Bar Chart Race</label>
+    <div class="d-flex justify-content-center" style="width: 30%;">
+        <label for="commodity-form" class="form-label pe-2 m-0">Select Commodity:</label>
+        <select id="commodity-dropdown" name="commodity" style="width: 35%;">
+            {% for commodity in commodity_values %}
+            {% if selected_commodity == commodity %}
+            <option value="{{ commodity }}" selected>{{ commodity }}</option>
+            {% else %}
+            <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="d-flex justify-content-center">
+        <label for="start-year" class="form-label pe-2 m-0">Start Year:</label>
+        <select id="start-year" name="start_year" class="year-dropdown">
+            {% for year in year_values %}
+            <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- End year dropdown menu -->
+        <label for="end-year" class="year-dropdown pe-2 m-0">End Year:</label>
+        <select id="end-year" name="end_year" class="year-dropdown">
+            {% for year in year_values %}
+            <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Submit button -->
+        
+        <button type="button" id="submit-btn" class="submit-btn btn btn-primary ms-4">Submit</button>
     </div>
 </form>
 
-<div class="pie-chart-container">
+<div class="pie-chart-container m-5">
     <!-- Pie chart for export -->
     <div id="pie-chart-export" class="pie-chart" style="display: block;">
         {{ pie_chart_export | safe }}
+    </div>
+
+    <div>
+        <hr class="ms-5" style="border-left: 5px solid black; height: 90%;">
     </div>
 
     <!-- Pie chart for import -->
@@ -80,8 +87,10 @@
     </div>
 </div>
 
+<hr class="border m-5 border-3 opacity-100" style="width: 95%;">
+
 <!-- Video container for the bar chart race -->
-<div id="race-video" class="video-container">
+<div id="race-video" class="video-container video-container d-flex justify-content-center mb-5">
     Video is being prepared...
 </div>
 <script>

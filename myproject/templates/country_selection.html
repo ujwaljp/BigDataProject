@@ -2,73 +2,93 @@
 {% load plotly_dash %}
 
 {% block content %}
-<h1>Country Trade Analysis by Commodity</h1>
+    <h1 class="p-3 text-center">Country Trade Analysis by Commodity</h1>
 
-<div style="
-position: relative;
-padding-bottom: 40.0%;
-height: 0;
-overflow:hidden;
-">
-<iframe id="my_iframe" src="/dash/app/dash_app/" style="
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            " frameborder="0"
-    sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
-</div>
+    <div class="justify-content-center d-flex flex-column" style="
+        position: relative;
+        padding-bottom: 30.0%;
+        height: 0;
+        overflow:hidden;
+        ">
+        <iframe id="my_iframe" src="/dash/app/dash_app/" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    " frameborder="0"
+            sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </div>
+
+    <!-- <iframe id="my_iframe" src="/dash/app/dash_app/" style="
+
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+    /* padding:auto; */
+    /* aspect-ratio: 16/9; */
+    " frameborder="0"
+        sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe> -->
 
     <!-- Form container for country selection and year dropdowns -->
-    <div class="form-container">
+
+    <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
+
+    <div class="form-container p-2 d-flex justify-content-center">
         <!-- Country selection dropdown menu -->
-        <label for="country-dropdown">Select Country:</label>
-        <select id="country-dropdown" name="country">
-            {% for country in country_values %}
-            {% if selected_country == country %}
-            <option value="{{ country }}" selected>{{ country }}</option>
-            {% else %}
-            <option value="{{ country }}">{{ country }}</option>
-            {% endif %}
-            {% endfor %}
-        </select>
+        <div class="d-flex">
+            <label for="country-dropdown" class="me-2">Select Country:</label>
+            <select id="country-dropdown" name="country">
+                {% for country in country_values %}
+                {% if selected_country == country %}
+                <option value="{{ country }}" selected>{{ country }}</option>
+                {% else %}
+                <option value="{{ country }}">{{ country }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
 
-        <!-- Start year dropdown menu -->
-        <label for="start-year" class="year-dropdown">Start Year:</label>
-        <select id="start-year" name="start_year" class="year-dropdown">
-            {% for year in year_values %}
-            <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
+            <!-- Start year dropdown menu -->
+            <label for="start-year" class="year-dropdown ms-5 me-2">Start Year:</label>
+            <select id="start-year" name="start_year" class="year-dropdown">
+                {% for year in year_values %}
+                <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
 
-        <!-- End year dropdown menu -->
-        <label for="end-year" class="year-dropdown">End Year:</label>
-        <select id="end-year" name="end_year" class="year-dropdown">
-            {% for year in year_values %}
-            <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
+            <!-- End year dropdown menu -->
+            <label for="end-year" class="year-dropdown">End Year:</label>
+            <select id="end-year" name="end_year" class="year-dropdown">
+                {% for year in year_values %}
+                <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
 
-        <!-- Submit button -->
-        <button type="button" id="submit-btn" class="submit-btn">Submit</button>
+            <!-- Submit button -->
+            <button type="button" id="submit-btn" class="submit-btn btn btn-primary ms-4">Submit</button>
+        </div>
     </div>
 
     <!-- Toggle buttons for pie charts -->
-    <div>
+    <!-- <div class="p-2 d-flex justify-content-center">
         <input type="checkbox" id="toggle-export" name="pie-chart" value="export" checked>
-        <label for="toggle-export">Export</label>
+        <label class="m-2 me-5" for="toggle-export">Export</label>
         <input type="checkbox" id="toggle-import" name="pie-chart" value="import" checked>
-        <label for="toggle-import">Import</label>
+        <label class="m-2 me-5" for="toggle-import">Import</label>
         <input type="checkbox" id="toggle-race" name="race-chart" value="race">
-        <label for="toggle-race">Display Bar Chart Race</label>
-    </div>
+        <label class="m-2 me-5" for="toggle-race">Display Bar Chart Race</label>
+    </div> -->
 
     <!-- Pie chart container -->
-    <div class="pie-chart-container">
+    <div class="pie-chart-container m-5">
         <!-- Pie chart for export -->
         <div id="pie-chart-export" class="pie-chart" style="display: block;">
             {{ pie_chart_export | safe }}
+        </div>
+
+        <div>
+            <hr class="ms-5" style="border-left: 5px solid black; height: 90%;">
         </div>
 
         <!-- Pie chart for import -->
@@ -77,8 +97,10 @@ overflow:hidden;
         </div>
     </div>
 
+    <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
+
     <!-- Video container for the bar chart race -->
-    <div id="race-video" class="video-container">
+    <div id="race-video" class="video-container d-flex mb-5 justify-content-center">
         Video is being prepared...
     </div>
 

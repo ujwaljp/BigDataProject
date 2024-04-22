@@ -76,7 +76,7 @@ def run_dash_app(selected_commodity=None, df=None, selected_country=None, geojso
                     "ticktext": np.expm1(ticks).round(3),
                 }
             },
-            height=800,
+            height=500,
             plot_bgcolor='rgba(1,1,1,0)'
         )
         fig.update_geos(
