@@ -29,52 +29,57 @@
     }
 </style>
 
-<h1>Country Trade Analysis by Commodity</h1>
+<h1 class="p-3 text-center">Country Trade Analysis by Commodity</h1>
 
-<!-- Form container for country selection -->
-<div class="form-container">
-    <!-- Country selection dropdown menu -->
-    <label for="country-dropdown">Select Country:</label>
-    <select id="country-dropdown" name="country">
-        {% for country in country_values %}
-        {% if selected_country == country %}
-        <option value="{{ country }}" selected>{{ country }}</option>
-        {% else %}
-        <option value="{{ country }}">{{ country }}</option>
-        {% endif %}
-        {% endfor %}
-    </select>
+<div class="d-flex p-3 justify-content-center flex-column">
+    <!-- Form container for country selection -->
+    <div class="form-container m-3 justify-content-center d-flex">
+        <!-- Country selection dropdown menu -->
+        <label class="me-2" for="country-dropdown">Select Country:</label>
+        <select id="country-dropdown" name="country">
+            {% for country in country_values %}
+            {% if selected_country == country %}
+            <option value="{{ country }}" selected>{{ country }}</option>
+            {% else %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
 
-</div>
+    </div>
 
-<!-- Second dropdown for import commodity -->
-<div class="form-container" id="import-commodity-container" style="display: block;">
-    <!-- Import commodity selection dropdown menu -->
-    <label for="import-commodity-dropdown">Select Import Commodity:</label>
-    <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
-        {% for commodity in import_commodity_values %}
-        <option value="{{ commodity }}">{{ commodity }}</option>
-        {% endfor %}
-    </select>
-</div>
+    <!-- Second dropdown for import commodity -->
+    <div class="form-container m-3 justify-content-center d-flex" id="import-commodity-container" style="display: block;">
+        <!-- Import commodity selection dropdown menu -->
+        <label class="me-2" for="import-commodity-dropdown">Select Import Commodity:</label>
+        <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
+            {% for commodity in import_commodity_values %}
+            <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Third dropdown for export commodity -->
-<div class="form-container" id="export-commodity-container" style="display : block;">
-    <!-- Export commodity selection dropdown menu -->
-    <label for="export-commodity-dropdown">Select Export Commodity:</label>
-    <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
-        {% for commodity in export_commodity_values %}
-        <option value="{{ commodity }}">{{ commodity }}</option>
-        {% endfor %}
-    </select>
-     <!-- Export commodity submit button -->
-     <button type="button" id="export-submit-btn" class="submit-btn">Submit</button>
+    <!-- Third dropdown for export commodity -->
+    <div class="form-container m-3 justify-content-center d-flex" id="export-commodity-container" style="display : block;">
+        <!-- Export commodity selection dropdown menu -->
+        <label class="me-2" for="export-commodity-dropdown">Select Export Commodity:</label>
+        <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
+            {% for commodity in export_commodity_values %}
+            <option value="{{ commodity }}">{{ commodity }}</option>
+            {% endfor %}
+        </select>
+        <!-- Export commodity submit button -->
+    </div>
+
+    <div class="d-flex m-3 justify-content-center">
+        <button type="button" id="export-submit-btn" class="submit-btn">Submit</button>
+    </div>
 </div>
 
 <!-- Chart container -->
 <div class="chart-container">
     <!-- Render the chart -->
-    <div id="chart" class="chart">
+    <div id="chart" class="chart d-flex flex-column justify-content-center">
         {{ line_chart_html | safe }}
     </div>
 </div>
