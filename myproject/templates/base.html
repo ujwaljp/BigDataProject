@@ -53,6 +53,7 @@
     .video-container {
         margin-top: 20px;
         display: none; /* Initially hide the video */
+        justify-content: space-around;
     }
 </style>
 
@@ -82,14 +83,6 @@
                 </ul>
                 <ul class="navbar-nav d-flex flex-row ms-auto me-3">
                 </ul>
-            </div>
-            <div class="form-check form-switch text-white pe-5 fs-5">
-                {% if globe_type == 'export' %}
-                    <input class="form-check-input" type="checkbox" id="export_import" checked>
-                {% else %}
-                    <input class="form-check-input" type="checkbox" id="export_import">
-                {% endif %}
-                <label class="form-check-label" for="flexSwitchCheckDefault"> {{ globe_type }}</label>
             </div>
         </div>
     </nav>

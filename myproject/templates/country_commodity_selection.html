@@ -33,7 +33,7 @@
 
 <div class="d-flex p-3 justify-content-center flex-column">
     <!-- Form container for country selection -->
-    <div class="form-container m-3 justify-content-center d-flex">
+    <div class="form-container m-4 justify-content-center d-flex">
         <!-- Country selection dropdown menu -->
         <label class="me-2" for="country-dropdown">Select Country:</label>
         <select id="country-dropdown" name="country">
@@ -48,31 +48,35 @@
 
     </div>
 
-    <!-- Second dropdown for import commodity -->
-    <div class="form-container m-3 justify-content-center d-flex" id="import-commodity-container" style="display: block;">
-        <!-- Import commodity selection dropdown menu -->
-        <label class="me-2" for="import-commodity-dropdown">Select Import Commodity:</label>
-        <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
-            {% for commodity in import_commodity_values %}
-            <option value="{{ commodity }}">{{ commodity }}</option>
-            {% endfor %}
-        </select>
+    <div class="d-flex justify-content-between">
+        <!-- Second dropdown for import commodity -->
+        <div class="form-container m-4 justify-content-center d-flex" id="import-commodity-container" style="display: block;">
+            <!-- Import commodity selection dropdown menu -->
+            <label class="me-2" for="import-commodity-dropdown">Select Import Commodity:</label>
+            <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
+                {% for commodity in import_commodity_values %}
+                <option value="{{ commodity }}">{{ commodity }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Third dropdown for export commodity -->
+        <div class="form-container m-4 justify-content-center d-flex" id="export-commodity-container" style="display : block;">
+            <!-- Export commodity selection dropdown menu -->
+            <label class="me-2" for="export-commodity-dropdown">Select Export Commodity:</label>
+            <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
+                {% for commodity in export_commodity_values %}
+                <option value="{{ commodity }}">{{ commodity }}</option>
+                {% endfor %}
+            </select>
+            <!-- Export commodity submit button -->
+        </div>
     </div>
 
-    <!-- Third dropdown for export commodity -->
-    <div class="form-container m-3 justify-content-center d-flex" id="export-commodity-container" style="display : block;">
-        <!-- Export commodity selection dropdown menu -->
-        <label class="me-2" for="export-commodity-dropdown">Select Export Commodity:</label>
-        <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
-            {% for commodity in export_commodity_values %}
-            <option value="{{ commodity }}">{{ commodity }}</option>
-            {% endfor %}
-        </select>
-        <!-- Export commodity submit button -->
-    </div>
+    
 
-    <div class="d-flex m-3 justify-content-center">
-        <button type="button" id="export-submit-btn" class="submit-btn">Submit</button>
+    <div class="d-flex m-5 justify-content-center">
+        <button type="button" id="export-submit-btn" class="submit-btn btn btn-primary">Submit</button>
     </div>
 </div>
 
@@ -109,4 +113,3 @@
 </script>
 
 {% endblock content %}
-

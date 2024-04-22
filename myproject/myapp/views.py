@@ -69,7 +69,8 @@ def home(request) :
 
 def running_bar_chart_country(request):
     selected_country = request.GET.get('country', 'AFGHANISTAN')
-    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2021_HS2_export.csv')
+    trade_type = request.GET.get('trade_type', 'export')
+    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2021_HS2_{trade_type}.csv')
     start_year = 2010
     end_year = 2021
     country_export_data = df[(df['country'] == selected_country) & (df['year'] >= start_year) & (df['year'] <= end_year)]
@@ -98,21 +99,22 @@ def running_bar_chart_country(request):
     # Create the Bar Chart Race
     bcr.bar_chart_race(
         df=df_pivot,
-        filename='static/commodity_valuation_race.mp4',  # Output filename
+        filename=f'static/commodity_valuation_race_{trade_type}.mp4',  # Output filename
         # orientation='h',  # Horizontal bars
         n_bars=10,  # Number of bars to include in the chart
         steps_per_period=10,  # Number of steps per year
         period_length=1000,  # Length of each period in milliseconds
-        title='Commodity Valuation Race',  # Title of the chart
+        title=f'Commodity Valuation Race {trade_type}',  # Title of the chart
         figsize=(10, 6),  # Figure size
     )
-
-    video_path = os.path.join(settings.STATIC_URL, 'commodity_valuation_race.mp4')
+    f_string = f'commodity_valuation_race_{trade_type}.mp4' 
+    video_path = os.path.join(settings.STATIC_URL, f_string)
     return JsonResponse({'video_path': video_path})
 
 def running_bar_chart_home(request):
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
-    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2021_HS2_export.csv')
+    trade_type = request.GET.get('trade_type', 'export')
+    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2021_HS2_{trade_type}.csv')
     start_year = 2010
     end_year = 2021
     commodity_export_data = df[(df['Commodity'] == selected_commodity) & (df['year'] >= start_year) & (df['year'] <= end_year)]
@@ -140,16 +142,16 @@ def running_bar_chart_home(request):
     # Create the Bar Chart Race
     bcr.bar_chart_race(
         df=df_pivot,
-        filename='static/country_valuation_race.mp4',  # Output filename
+        filename=f'static/country_valuation_race_{trade_type}.mp4',  # Output filename
         # orientation='h',  # Horizontal bars
         n_bars=10,  # Number of bars to include in the chart
         steps_per_period=10,  # Number of steps per year
         period_length=1000,  # Length of each period in milliseconds
-        title='Country Valuation Race',  # Title of the chart
+        title=f'Country Valuation Race for {trade_type}',  # Title of the chart
         figsize=(10, 6),  # Figure size
     )
-
-    video_path = os.path.join(settings.STATIC_URL, 'country_valuation_race.mp4')
+    f_string = f'country_valuation_race_{trade_type}.mp4'
+    video_path = os.path.join(settings.STATIC_URL, f_string)
     return JsonResponse({'video_path': video_path})
 
 def commodity_selection(request) :

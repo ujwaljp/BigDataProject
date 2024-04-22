@@ -35,7 +35,7 @@
 
     <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
 
-    <div class="form-container p-2 d-flex flex-column">
+    <div class="form-container p-2 d-flex justify-content-center">
         <!-- Country selection dropdown menu -->
         <div class="d-flex">
             <label for="country-dropdown" class="me-2">Select Country:</label>
@@ -66,19 +66,19 @@
             </select>
 
             <!-- Submit button -->
-            <button type="button" id="submit-btn" class="submit-btn ms-4">Submit</button>
+            <button type="button" id="submit-btn" class="submit-btn btn btn-primary ms-4">Submit</button>
         </div>
     </div>
 
     <!-- Toggle buttons for pie charts -->
-    <div class="p-2 d-flex justify-content-center">
+    <!-- <div class="p-2 d-flex justify-content-center">
         <input type="checkbox" id="toggle-export" name="pie-chart" value="export" checked>
         <label class="m-2 me-5" for="toggle-export">Export</label>
         <input type="checkbox" id="toggle-import" name="pie-chart" value="import" checked>
         <label class="m-2 me-5" for="toggle-import">Import</label>
         <input type="checkbox" id="toggle-race" name="race-chart" value="race">
         <label class="m-2 me-5" for="toggle-race">Display Bar Chart Race</label>
-    </div>
+    </div> -->
 
     <!-- Pie chart container -->
     <div class="pie-chart-container m-5">
@@ -139,7 +139,7 @@
 
             if (event.target.checked) {
                 // Display the video container
-                raceVideo.style.display = 'block';
+                raceVideo.style.display = 'flex';
             } else {
                 // Hide the video container
                 raceVideo.style.display = 'none';
@@ -187,9 +187,9 @@
             observer.observe(reactEntryPointDiv, { childList: true, subtree: true });
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-        console.log("inside load")
-        fetch(`/dashboard/generate_video_country/?country=${encodeURIComponent('{{ selected_country }}')}&truncate=true`)
+        var div_cleared = false;
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch(`/dashboard/generate_video_country/?commodity=${encodeURIComponent('{{ selected_commodity }}')}&trade_type=export`)
             .then(response => response.json())
             .then(data => {
                 const videoElement = document.createElement('video');
@@ -207,7 +207,34 @@
 
                 // Append video element to video container
                 videoContainer = document.getElementById('race-video')
-                videoContainer.textContent = ''; // Clear the text content
+                if(div_cleared == false){
+                    div_cleared = true;
+                    videoContainer.textContent = ''; // Clear the text content
+                }
+                videoContainer.appendChild(videoElement);
+            });
+            fetch(`/dashboard/generate_video_country/?commodity=${encodeURIComponent('{{ selected_commodity }}')}&trade_type=import`)
+            .then(response => response.json())
+            .then(data => {
+                const videoElement = document.createElement('video');
+                videoElement.width = 640;
+                videoElement.height = 480;
+                videoElement.controls = true;
+
+                // Set video source and attributes
+                const sourceElement = document.createElement('source');
+                sourceElement.src = data.video_path;
+                sourceElement.type = 'video/mp4';
+
+                // Append source element to video element
+                videoElement.appendChild(sourceElement);
+
+                // Append video element to video container
+                videoContainer = document.getElementById('race-video')
+                if(div_cleared == false){
+                    div_cleared = true;
+                    videoContainer.textContent = ''; // Clear the text content
+                } // Clear the text content
                 videoContainer.appendChild(videoElement);
             });
     });
