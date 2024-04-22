@@ -2,38 +2,6 @@
 {% load plotly_dash %}
 
 {% block content %}
-<style>
-    .pie-chart-container {
-        display: block;
-        /* justify-content: space-around; */
-        margin-top: 20px;
-    }
-
-    .pie-chart {
-        width: 100%;
-    }
-
-    .form-container {
-        display: flex;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .year-dropdown {
-        margin-right: 10px;
-    }
-
-    .submit-btn {
-        margin-left: 10px;
-    }
-    .checkbox-container {
-            margin-top: 20px;
-        }
-    .video-container {
-        margin-top: 20px;
-        display: none; /* Initially hide the video */
-    }
-</style>
 <h1>Country Trade Analysis by Commodity</h1>
 
 
@@ -106,10 +74,7 @@
 
     <!-- Video container for the bar chart race -->
     <div id="race-video" class="video-container">
-        <video width="640" height="480" controls>
-            <source src="{{ bcr }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        Video is being prepared...
     </div>
 
     <script>
@@ -194,6 +159,31 @@
             // Start observing changes in the react-entry-point div
             observer.observe(reactEntryPointDiv, { childList: true, subtree: true });
         };
+
+        document.addEventListener('DOMContentLoaded', function() {
+        console.log("inside load")
+        fetch(`/dashboard/generate_video_country/?country=${encodeURIComponent('{{ selected_country }}')}&truncate=true`)
+            .then(response => response.json())
+            .then(data => {
+                const videoElement = document.createElement('video');
+                videoElement.width = 640;
+                videoElement.height = 480;
+                videoElement.controls = true;
+
+                // Set video source and attributes
+                const sourceElement = document.createElement('source');
+                sourceElement.src = data.video_path;
+                sourceElement.type = 'video/mp4';
+
+                // Append source element to video element
+                videoElement.appendChild(sourceElement);
+
+                // Append video element to video container
+                videoContainer = document.getElementById('race-video')
+                videoContainer.textContent = ''; // Clear the text content
+                videoContainer.appendChild(videoElement);
+            });
+    });
     </script>
 
     {% endblock content %}

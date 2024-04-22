@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .year-dropdown {
+        margin-right: 10px;
+    }
+
+    .submit-btn {
+        margin-left: 10px;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+    }
+
+    .chart {
+        width: 100%;
+    }
+
+    .commodity-dropdown {
+        width: 500px;
+    }
+</style>
+
+<h1>Country Trade Analysis by Commodity</h1>
+
+<!-- Form container for country selection -->
+<div class="form-container">
+    <!-- Country selection dropdown menu -->
+    <label for="country-dropdown">Select Country:</label>
+    <select id="country-dropdown" name="country">
+        {% for country in country_values %}
+        {% if selected_country == country %}
+        <option value="{{ country }}" selected>{{ country }}</option>
+        {% else %}
+        <option value="{{ country }}">{{ country }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+
+</div>
+
+<!-- Second dropdown for import commodity -->
+<div class="form-container" id="import-commodity-container" style="display: block;">
+    <!-- Import commodity selection dropdown menu -->
+    <label for="import-commodity-dropdown">Select Import Commodity:</label>
+    <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
+        {% for commodity in import_commodity_values %}
+        <option value="{{ commodity }}">{{ commodity }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- Third dropdown for export commodity -->
+<div class="form-container" id="export-commodity-container" style="display : block;">
+    <!-- Export commodity selection dropdown menu -->
+    <label for="export-commodity-dropdown">Select Export Commodity:</label>
+    <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
+        {% for commodity in export_commodity_values %}
+        <option value="{{ commodity }}">{{ commodity }}</option>
+        {% endfor %}
+    </select>
+     <!-- Export commodity submit button -->
+     <button type="button" id="export-submit-btn" class="submit-btn">Submit</button>
+</div>
+
+<!-- Chart container -->
+<div class="chart-container">
+    <!-- Render the chart -->
+    <div id="chart" class="chart">
+        {{ line_chart_html | safe }}
+    </div>
+</div>
+
+<script>
+    // Event listener for submit button
+    var url, export_, import_;
+
+    document.getElementById('export-submit-btn').addEventListener('click', function (event) {
+        var selectedCountry = document.getElementById('country-dropdown').value;
+        import_ = document.getElementById('import-commodity-dropdown').value;
+        export_ = document.getElementById('export-commodity-dropdown').value;
+        // Redirect with selected parameters
+        url = '/dashboard/country_commodity_selection/?country=' + encodeURIComponent(selectedCountry) + '&import_commodity=' + encodeURIComponent(import_) + '&export_commodity=' + encodeURIComponent(export_);
+        window.location.href = url;
+    });
+
+    // Event listener for country dropdown change
+    document.getElementById('country-dropdown').addEventListener('change', function (event) {
+        // Show the import commodity dropdown
+        var selectedCountry = document.getElementById('country-dropdown').value;
+        url = '/dashboard/country_commodity_selection/?country=' + encodeURIComponent(selectedCountry);
+        window.location.href = url;
+    });
+
+    
+</script>
+
+{% endblock content %}
+
