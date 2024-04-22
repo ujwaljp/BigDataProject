@@ -20,26 +20,13 @@
             sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
 
-    <!-- <iframe id="my_iframe" src="/dash/app/dash_app/" style="
-
-    top: 0;
-    left: 0;
-    width:100%;
-    height: 100%;
-    /* padding:auto; */
-    /* aspect-ratio: 16/9; */
-    " frameborder="0"
-        sandbox="allow-downloads allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe> -->
-
-    <!-- Form container for country selection and year dropdowns -->
-
     <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
 
     <div class="form-container p-2 d-flex justify-content-center">
         <!-- Country selection dropdown menu -->
         <div class="d-flex">
             <label for="country-dropdown" class="me-2">Select Country:</label>
-            <select id="country-dropdown" name="country">
+            <select id="country-dropdown" name="country" class="form-select">
                 {% for country in country_values %}
                 {% if selected_country == country %}
                 <option value="{{ country }}" selected>{{ country }}</option>
@@ -51,7 +38,7 @@
 
             <!-- Start year dropdown menu -->
             <label for="start-year" class="year-dropdown ms-5 me-2">Start Year:</label>
-            <select id="start-year" name="start_year" class="year-dropdown">
+            <select id="start-year" name="start_year" class="year-dropdown form-select">
                 {% for year in year_values %}
                 <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
@@ -59,7 +46,7 @@
 
             <!-- End year dropdown menu -->
             <label for="end-year" class="year-dropdown">End Year:</label>
-            <select id="end-year" name="end_year" class="year-dropdown">
+            <select id="end-year" name="end_year" class="year-dropdown form-select">
                 {% for year in year_values %}
                 <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
@@ -100,7 +87,7 @@
     <hr class="border m-5 border-3 opacity-100" style="width: 95%;">
 
     <!-- Video container for the bar chart race -->
-    <div id="race-video" class="video-container d-flex mb-5 justify-content-center">
+    <div id="race-video" class="video-container mb-5">
         Video is being prepared...
     </div>
 
@@ -118,33 +105,33 @@
             window.location.href = url;
         });
 
-        // Event listener for toggle buttons
-        document.getElementById('toggle-export').addEventListener('change', function (event) {
-            if (document.getElementById('pie-chart-export').style.display == 'block')
-                document.getElementById('pie-chart-export').style.display = 'none';
-            else
-                document.getElementById('pie-chart-export').style.display = 'block'
+        // // Event listener for toggle buttons
+        // document.getElementById('toggle-export').addEventListener('change', function (event) {
+        //     if (document.getElementById('pie-chart-export').style.display == 'block')
+        //         document.getElementById('pie-chart-export').style.display = 'none';
+        //     else
+        //         document.getElementById('pie-chart-export').style.display = 'block'
 
-        });
+        // });
 
-        document.getElementById('toggle-import').addEventListener('change', function (event) {
-            if (document.getElementById('pie-chart-import').style.display == 'block')
-                document.getElementById('pie-chart-import').style.display = 'none';
-            else
-                document.getElementById('pie-chart-import').style.display = 'block'
-        });
+        // document.getElementById('toggle-import').addEventListener('change', function (event) {
+        //     if (document.getElementById('pie-chart-import').style.display == 'block')
+        //         document.getElementById('pie-chart-import').style.display = 'none';
+        //     else
+        //         document.getElementById('pie-chart-import').style.display = 'block'
+        // });
 
-        document.getElementById('toggle-race').addEventListener('change', function(event) {
-            var raceVideo = document.getElementById('race-video');
+        // document.getElementById('toggle-race').addEventListener('change', function(event) {
+        //     var raceVideo = document.getElementById('race-video');
 
-            if (event.target.checked) {
-                // Display the video container
-                raceVideo.style.display = 'flex';
-            } else {
-                // Hide the video container
-                raceVideo.style.display = 'none';
-            }
-        });
+        //     if (event.target.checked) {
+        //         // Display the video container
+        //         raceVideo.style.display = 'flex';
+        //     } else {
+        //         // Hide the video container
+        //         raceVideo.style.display = 'none';
+        //     }
+        // });
         var iframe = document.getElementById('my_iframe');
         // Get the iframe element
 
