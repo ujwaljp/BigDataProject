@@ -40,7 +40,7 @@
             <label for="start-year" class="year-dropdown ms-5 me-2">Start Year:</label>
             <select id="start-year" name="start_year" class="year-dropdown form-select">
                 {% for year in year_values %}
-                <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+                <option value="{{ year }}" {% if year == start_year %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
 
@@ -48,7 +48,7 @@
             <label for="end-year" class="year-dropdown">End Year:</label>
             <select id="end-year" name="end_year" class="year-dropdown form-select">
                 {% for year in year_values %}
-                <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
+                <option value="{{ year }}" {% if year == end_year %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
 
@@ -56,16 +56,6 @@
             <button type="button" id="submit-btn" class="submit-btn btn btn-primary ms-4">Submit</button>
         </div>
     </div>
-
-    <!-- Toggle buttons for pie charts -->
-    <!-- <div class="p-2 d-flex justify-content-center">
-        <input type="checkbox" id="toggle-export" name="pie-chart" value="export" checked>
-        <label class="m-2 me-5" for="toggle-export">Export</label>
-        <input type="checkbox" id="toggle-import" name="pie-chart" value="import" checked>
-        <label class="m-2 me-5" for="toggle-import">Import</label>
-        <input type="checkbox" id="toggle-race" name="race-chart" value="race">
-        <label class="m-2 me-5" for="toggle-race">Display Bar Chart Race</label>
-    </div> -->
 
     <!-- Pie chart container -->
     <div class="pie-chart-container m-5">
@@ -105,33 +95,7 @@
             window.location.href = url;
         });
 
-        // // Event listener for toggle buttons
-        // document.getElementById('toggle-export').addEventListener('change', function (event) {
-        //     if (document.getElementById('pie-chart-export').style.display == 'block')
-        //         document.getElementById('pie-chart-export').style.display = 'none';
-        //     else
-        //         document.getElementById('pie-chart-export').style.display = 'block'
-
-        // });
-
-        // document.getElementById('toggle-import').addEventListener('change', function (event) {
-        //     if (document.getElementById('pie-chart-import').style.display == 'block')
-        //         document.getElementById('pie-chart-import').style.display = 'none';
-        //     else
-        //         document.getElementById('pie-chart-import').style.display = 'block'
-        // });
-
-        // document.getElementById('toggle-race').addEventListener('change', function(event) {
-        //     var raceVideo = document.getElementById('race-video');
-
-        //     if (event.target.checked) {
-        //         // Display the video container
-        //         raceVideo.style.display = 'flex';
-        //     } else {
-        //         // Hide the video container
-        //         raceVideo.style.display = 'none';
-        //     }
-        // });
+    
         var iframe = document.getElementById('my_iframe');
         // Get the iframe element
 

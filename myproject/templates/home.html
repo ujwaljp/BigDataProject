@@ -53,7 +53,7 @@
         <label for="start-year" class="form-label pe-2 m-0">Start Year:</label>
         <select id="start-year" name="start_year" class="year-dropdown form-select">
             {% for year in year_values %}
-            <option value="{{ year }}" {% if year == selected_start_year %}selected{% endif %}>{{ year }}</option>
+            <option value="{{ year }}" {% if year == start_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
 
@@ -61,7 +61,7 @@
         <label for="end-year" class="year-dropdown pe-2 m-0">End Year:</label>
         <select id="end-year" name="end_year" class="year-dropdown form-select">
             {% for year in year_values %}
-            <option value="{{ year }}" {% if year == selected_end_year %}selected{% endif %}>{{ year }}</option>
+            <option value="{{ year }}" {% if year == end_year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
 
@@ -96,45 +96,18 @@
 <script>
     // Event listener to trigger page reload when commodity is selected
     document.getElementById('submit-btn').addEventListener('click', function (event) {
-        var selectedCountry = document.getElementById('commodity-dropdown').value;
+        var selectedCommodity = document.getElementById('commodity-dropdown').value;
         var selectedStartYear = document.getElementById('start-year').value;
         var selectedEndYear = document.getElementById('end-year').value;
 
         // Redirect with selected parameters
-        var url = '/dashboard/home/?country=' + encodeURIComponent(selectedCountry);
+        var url = '/dashboard/home/?commodity=' + encodeURIComponent(selectedCommodity);
         url += '&start_year=' + encodeURIComponent(selectedStartYear);
         url += '&end_year=' + encodeURIComponent(selectedEndYear);
         window.location.href = url;
     });
 
-    // Event listener for toggle buttons
-    // document.getElementById('toggle-export').addEventListener('change', function (event) {
-    //     if (document.getElementById('pie-chart-export').style.display == 'block')
-    //         document.getElementById('pie-chart-export').style.display = 'none';
-    //     else
-    //         document.getElementById('pie-chart-export').style.display = 'block'
-
-    // });
-
-    // document.getElementById('toggle-import').addEventListener('change', function (event) {
-    //     if (document.getElementById('pie-chart-import').style.display == 'block')
-    //         document.getElementById('pie-chart-import').style.display = 'none';
-    //     else
-    //         document.getElementById('pie-chart-import').style.display = 'block'
-    // });
-
-    // document.getElementById('toggle-race').addEventListener('change', function (event) {
-    //     var raceVideo = document.getElementById('race-video');
-
-    //     if (event.target.checked) {
-    //         // Display the video container
-    //         raceVideo.style.display = 'flex';
-    //     } else {
-    //         // Hide the video container
-    //         raceVideo.style.display = 'none';
-    //     }
-    // });
-
+    
     var iframe = document.getElementById('my_iframe');
     // Get the iframe element
 
