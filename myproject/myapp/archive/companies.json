@@ -32,7 +32,7 @@
     "Reactors and Boilers":["THERMAX.NS", "FORBESCO.BO", "RIGD.IL", "ADANIPOWER.NS"],
     "Electrical Machinery":["BOSCHLTD.NS", "GODREJAGRO.BO", "HAVELLS.BO", "BAJAJELEC.BO"],
     "Railway Locomotives":["TITAGARH.BO", "TATAMOTORS.NS", "BHEL.BO"],
-    "Automobiles":[""],
+    "Automobiles":["MARUTI.BO", "BAJAJ-AUTO.NS", "M&M.NS", "ASHOKLEY.NS"],
     "Surgical Industry":["POLYMED.BO"],
     "Clocks and Watches":["TITAN.NS", "TIMEX.BO", "SONATSOFTW.NS"],
     "Furniture":["CENTURYPLY.BO", "GREENPLY.NS"],

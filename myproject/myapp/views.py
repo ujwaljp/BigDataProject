@@ -19,11 +19,11 @@ import yfinance as yf
 def home(request) :
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
     start_year = int(request.GET.get('start_year', 2010))
-    end_year = int(request.GET.get('end_year', 2021))
+    end_year = int(request.GET.get('end_year', 2023))
     globe_type = request.GET.get('globe_type', 'export')
     # Read the dataset
-    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+    df = pd.read_csv(BASE_DIR / 'myapp/archive/2010_2023_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
     # Filter data for the selected commodity
     # commodity_data = df[df['Commodity'] == selected_commodity]
 
@@ -74,9 +74,9 @@ def home(request) :
 def running_bar_chart_country(request):
     selected_country = request.GET.get('country', 'AFGHANISTAN')
     trade_type = request.GET.get('trade_type', 'export')
-    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2021_HS2_{trade_type}.csv')
+    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2023_HS2_{trade_type}.csv')
     start_year = 2010
-    end_year = 2021
+    end_year = 2023
     country_export_data = df[(df['country'] == selected_country) & (df['year'] >= start_year) & (df['year'] <= end_year)]
     country_export_data['year'] = pd.to_datetime(df['year'], format='%Y')
 
@@ -118,9 +118,9 @@ def running_bar_chart_country(request):
 def running_bar_chart_home(request):
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
     trade_type = request.GET.get('trade_type', 'export')
-    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2021_HS2_{trade_type}.csv')
+    df = pd.read_csv(BASE_DIR / f'myapp/archive/2010_2023_HS2_{trade_type}.csv')
     start_year = 2010
-    end_year = 2021
+    end_year = 2023
     commodity_export_data = df[(df['Commodity'] == selected_commodity) & (df['year'] >= start_year) & (df['year'] <= end_year)]
     commodity_export_data['year'] = pd.to_datetime(df['year'], format='%Y')
 
@@ -165,11 +165,11 @@ def country_selection(request) :
 
     selected_country = request.GET.get('country', 'AFGHANISTAN')
     start_year = int(request.GET.get('start_year', 2010))
-    end_year = int(request.GET.get('end_year', 2021))
+    end_year = int(request.GET.get('end_year', 2023))
 
     # Read the dataset
-    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
 
     # # Load geojson data
     # with open(BASE_DIR / 'myapp/archive/countries.geo.json', 'r') as f:
@@ -220,10 +220,10 @@ def country_selection(request) :
 def country_commodity_selection(request) :
     selected_country = request.GET.get('country', 'RUSSIA')
     start_year = 2010
-    end_year = 2021
+    end_year = 2023
      # Read the dataset
-    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
 
     # Filter data for the selected country
     country_export_data = df[(df['country'] == selected_country)]
@@ -264,10 +264,10 @@ def country_commodity_selection(request) :
 def commodity_country_selection(request) :
     selected_commodity = request.GET.get('commodity', 'MEAT AND EDIBLE MEAT OFFAL.')
     start_year = 2010
-    end_year = 2021
+    end_year = 2023
      # Read the dataset
-    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+    df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_export.csv')
+    df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
 
     # Filter data for the selected commodity
     commodity_export_data = df[(df['Commodity'] == selected_commodity)]
@@ -309,7 +309,7 @@ def commodity_country_selection(request) :
 def extract_close_prices(ticker):
     # Fetch OHLC data from Yahoo Finance
     try:
-        data = yf.download(ticker, start='2010-03-31', end='2021-12-31', interval='3mo')['Close']
+        data = yf.download(ticker, start='2010-03-31', end='2023-12-31', interval='3mo')['Close']
         # Check if any data is missing
         if data.empty or data.isnull().values.any():
             return None
@@ -368,8 +368,8 @@ def trend_analysis(request):
         selected_sector = request.GET.get('sector', 'Construction')
 
         # Read the dataset
-        df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_export.csv')
-        df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2021_HS2_import.csv')
+        df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_export.csv')
+        df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
 
         # Filter commodities belonging to the given category
         filtered_commodities = sector_df[sector_df['Category'] == selected_sector]['Commodity']
@@ -391,7 +391,7 @@ def trend_analysis(request):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=total_export_per_year['year'], y=total_export_per_year['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
         fig.add_trace(go.Scatter(x=total_import_per_year['year'], y=total_import_per_year['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
-        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
+        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2023})',
                         xaxis_title='Year',
                         yaxis_title='Valuation (In Million US $)')
         
@@ -404,11 +404,11 @@ def trend_analysis(request):
         if len(stock_data) > 2 :
             fig1.add_trace(go.Scatter(x=stock_data[2]['year'], y=stock_data[2]['value'], mode='lines+markers', name=company_list[2], line=dict(color='red')))
 
-        fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2021})',
+        fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2023})',
                         xaxis_title='Year',
                         yaxis_title='Stock Price (In INR)')
         
-        return render(request, 'trend_analysis.html', {'line_chart_html' : fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_chart_html' : fig1.to_html(), 'company_values' : company_list})
+        return render(request, 'trend_analysis.html', {'line_chart_html' : fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_chart_html' : fig1.to_html()})
 
     elif 'company' in request.GET :
         selected_sector = request.GET.get('sector', 'Construction')

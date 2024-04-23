@@ -63,7 +63,11 @@
             <label class="me-2" for="import-country-dropdown">Select Import Country:</label>
             <select id="import-country-dropdown" name="import-country" class="country-dropdown" value="{{import_country}}">
                 {% for country in import_country_values %}
+                {% if import_country == country %}
+                <option value="{{ country }}" selected>{{ country }}</option>
+                {% else %}
                 <option value="{{ country }}">{{ country }}</option>
+                {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -74,7 +78,11 @@
             <label class="me-2" for="export-country-dropdown">Select Export Country:</label>
             <select id="export-country-dropdown" name="export-country" class="country-dropdown" value="{{export_country}}">
                 {% for country in export_country_values %}
+                {% if export_country == country %}
+                <option value="{{ country }}" selected>{{ country }}</option>
+                {% else %}
                 <option value="{{ country }}">{{ country }}</option>
+                {% endif %}
                 {% endfor %}
             </select>
             <!-- Export country submit button -->

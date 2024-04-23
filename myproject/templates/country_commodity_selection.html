@@ -63,7 +63,11 @@
             <label class="me-2" for="import-commodity-dropdown">Select Import Commodity:</label>
             <select id="import-commodity-dropdown" name="import-commodity" class="commodity-dropdown" value="{{import_commodity}}">
                 {% for commodity in import_commodity_values %}
+                {% if commodity == import_commodity %}
+                <option value="{{ commodity }}" selected>{{ commodity }}</option>
+                {% else %}
                 <option value="{{ commodity }}">{{ commodity }}</option>
+                {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -74,7 +78,11 @@
             <label class="me-2" for="export-commodity-dropdown">Select Export Commodity:</label>
             <select id="export-commodity-dropdown" name="export-commodity" class="commodity-dropdown" value="{{export_commodity}}">
                 {% for commodity in export_commodity_values %}
+                {% if commodity == export_commodity %}
+                <option value="{{ commodity }}" selected>{{ commodity }}</option>
+                {% else %}
                 <option value="{{ commodity }}">{{ commodity }}</option>
+                {% endif %}
                 {% endfor %}
             </select>
             <!-- Export commodity submit button -->

@@ -30,25 +30,13 @@
         <label class="me-2" for="sector-dropdown">Select Economic Sector:</label>
         <select id="sector-dropdown" name="sector">
             {% for sector in sector_values %}
+            {% if sector == selected_sector %}
+            <option value="{{ sector }}" selected>{{ sector }}</option>
+            {% else %}
             <option value="{{ sector }}">{{ sector }}</option>
+            {% endif %}
             {% endfor %}
         </select>
-    </div>
-
-    <!-- Second dropdown for company selection -->
-    <div class="form-container m-4 justify-content-center d-flex" id="company-container" style="display: block;">
-        <!-- Company selection dropdown menu -->
-        <label class="me-2" for="company-dropdown">Select Company:</label>
-        <select id="company-dropdown" name="company" class="commodity-dropdown" value="{{company}}">
-            {% for company in company_values %}
-            <option value="{{ company }}">{{ company }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <!-- Submit button -->
-    <div class="d-flex m-5 justify-content-center">
-        <button type="button" id="submit-btn" class="submit-btn btn btn-primary">Submit</button>
     </div>
 </div>
 
@@ -70,16 +58,7 @@
 
 
 <script>
-    var url, sector, company;
-
-    document.getElementById('submit-btn').addEventListener('click', function (event) {
-        sector = document.getElementById('sector-dropdown').value;
-        company = document.getElementById('company-dropdown').value;
-        
-        // Redirect with selected parameters
-        url = '/dashboard/trend_analysis/?sector=' + encodeURIComponent(sector) + '&company=' + encodeURIComponent(company);
-        window.location.href = url;
-    });
+    var url, sector;
 
     // Event listener for sector dropdown change
     document.getElementById('sector-dropdown').addEventListener('change', function (event) {
