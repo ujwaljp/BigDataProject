@@ -393,7 +393,7 @@ def trend_analysis(request):
         fig.add_trace(go.Scatter(x=total_import_per_year['year'], y=total_import_per_year['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
         fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
-                        yaxis_title='Valuation')
+                        yaxis_title='Valuation (In Million US $)')
         
         fig1 = go.Figure()
         fig1.add_trace(go.Scatter(x=stock_data[0]['year'], y=stock_data[0]['value'], mode='lines+markers', name=company_list[0], line=dict(color='green')))
@@ -406,7 +406,7 @@ def trend_analysis(request):
 
         fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
-                        yaxis_title='Valuation')
+                        yaxis_title='Stock Price (In INR)')
         
         return render(request, 'trend_analysis.html', {'line_chart_html' : fig.to_html(), 'sector_values' : sector_df['Category'].unique(), 'selected_sector' : selected_sector, 'company_chart_html' : fig1.to_html(), 'company_values' : company_list})
 
