@@ -63,11 +63,11 @@ def home(request) :
 
     fig1 = px.pie(top_countries_export, values='value', names='Shortened_Name', hover_name='country', hole=.3)
     fig1.update_traces(textposition='inside', textinfo='percent+label')
-    fig1.update_layout(title=f'Top 6 Countries Exporting {selected_commodity} and Others', margin=dict(t=0, b=0, l=0, r=0))
+    fig1.update_layout(title=f'Top 6 Countries Exporting {selected_commodity} and Others', margin=dict(t=30, b=0, l=0, r=0))
 
     fig2 = px.pie(top_countries_import, values='value', names='Shortened_Name', hover_name='country', hole=.3)
     fig2.update_traces(textposition='inside', textinfo='percent+label')
-    fig2.update_layout(title=f'Top 6 Countries Importing {selected_commodity} and Others', margin=dict(t=0, b=0, l=0, r=0))
+    fig2.update_layout(title=f'Top 6 Countries Importing {selected_commodity} and Others', margin=dict(t=25, b=0, l=0, r=0))
 
     return render(request, 'home.html',  {'commodity_values' : df['Commodity'].unique(), 'selected_commodity' : selected_commodity, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year, 'globe_type': globe_type})
 
@@ -209,11 +209,11 @@ def country_selection(request) :
 
     fig1 = px.pie(top_commodities_export, values='value', names='Shortened_Name',hover_name = 'Commodity', hole=.3)
     fig1.update_traces(textposition='inside', textinfo='percent+label')
-    fig1.update_layout(title=f'Top 6 Commodities Exported by {selected_country} and Others',margin=dict(t=0, b=0, l=0, r=0))
+    fig1.update_layout(title=f'Top 6 Commodities Exported by {selected_country} and Others',margin=dict(t=35, b=0, l=0, r=0))
 
     fig2 = px.pie(top_commodities_import, values='value', names='Shortened_Name',hover_name = 'Commodity', hole=.3)
     fig2.update_traces(textposition='inside', textinfo='percent+label')
-    fig2.update_layout(title=f'Top 6 Commodities Imported by {selected_country} and Others', margin=dict(t=0, b=0, l=0, r=0))
+    fig2.update_layout(title=f'Top 6 Commodities Imported by {selected_country} and Others', margin=dict(t=25, b=0, l=0, r=0))
 
     return render(request, 'country_selection.html', {'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'pie_chart_export' : fig1.to_html(), 'pie_chart_import' : fig2.to_html(), 'year_values' : np.arange(2010, 2022), 'start_year' : start_year, 'end_year' : end_year})
 
@@ -309,7 +309,7 @@ def commodity_country_selection(request) :
 def extract_close_prices(ticker):
     # Fetch OHLC data from Yahoo Finance
     try:
-        data = yf.download(ticker, start='2010-03-31', end='2023-12-31', interval='3mo')['Close']
+        data = yf.download(ticker, start='2010-03-31', end='2021-12-31', interval='3mo')['Close']
         # Check if any data is missing
         if data.empty or data.isnull().values.any():
             return None
@@ -363,14 +363,14 @@ def find_stock_data(category):
 def trend_analysis(request):
     
     sector_df = pd.read_csv(BASE_DIR / 'myapp/archive/categories.csv')
-
     if 'sector' in request.GET :
         selected_sector = request.GET.get('sector', 'Construction')
 
         # Read the dataset
         df = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_export.csv')
         df2 = pd.read_csv(BASE_DIR /'myapp/archive/2010_2023_HS2_import.csv')
-
+        df = df[(df['year'] >= 2010) & (df['year'] <= 2021)]
+        df2 = df2[(df2['year'] >= 2010) & (df2['year'] <= 2021)]
         # Filter commodities belonging to the given category
         filtered_commodities = sector_df[sector_df['Category'] == selected_sector]['Commodity']
 
@@ -391,7 +391,7 @@ def trend_analysis(request):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=total_export_per_year['year'], y=total_export_per_year['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
         fig.add_trace(go.Scatter(x=total_import_per_year['year'], y=total_import_per_year['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
-        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2023})',
+        fig.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
                         yaxis_title='Valuation (In Million US $)')
         
@@ -404,7 +404,7 @@ def trend_analysis(request):
         if len(stock_data) > 2 :
             fig1.add_trace(go.Scatter(x=stock_data[2]['year'], y=stock_data[2]['value'], mode='lines+markers', name=company_list[2], line=dict(color='red')))
 
-        fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2023})',
+        fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
                         yaxis_title='Stock Price (In INR)')
         
