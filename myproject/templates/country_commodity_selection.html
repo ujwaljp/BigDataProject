@@ -92,6 +92,7 @@
     <div>
     <label class=" m-1" for="commodity_selection">Select Commodity</label>
     <select id="commodity_selection" name="commodity_selection" value="{{export_commodity}}" class="form-select-sm">
+        <option value="All"> ALL COMMODITIES</option>
         {% for commodity in commodity_values %}
             {% if commodity == export_commodity %}
                 <option value="{{ commodity }}" selected>{{ commodity }}</option>

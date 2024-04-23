@@ -92,6 +92,7 @@
     <div>
     <label class=" m-1" for="country_selection">Select Country</label>
     <select id="country_selection" name="country_selection" value="{{export_country}}" class="form-select-sm">
+        <option value="All"> ALL COUNTRIES </option>
         {% for country in country_values %}
             {% if country == export_country %}
                 <option value="{{ country }}" selected>{{ country }}</option>

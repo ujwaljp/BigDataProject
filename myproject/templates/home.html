@@ -96,12 +96,12 @@
 <script>
     // Event listener to trigger page reload when commodity is selected
     document.getElementById('submit-btn').addEventListener('click', function (event) {
-        var selectedCountry = document.getElementById('country-dropdown').value;
+        var selectedCountry = document.getElementById('commodity-dropdown').value;
         var selectedStartYear = document.getElementById('start-year').value;
         var selectedEndYear = document.getElementById('end-year').value;
 
         // Redirect with selected parameters
-        var url = '/dashboard/country_selection/?country=' + encodeURIComponent(selectedCountry);
+        var url = '/dashboard/home/?country=' + encodeURIComponent(selectedCountry);
         url += '&start_year=' + encodeURIComponent(selectedStartYear);
         url += '&end_year=' + encodeURIComponent(selectedEndYear);
         window.location.href = url;

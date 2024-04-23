@@ -243,8 +243,13 @@ def country_commodity_selection(request) :
     if( 'commodity' in request.GET):
         import_commodity = export_commodity = request.GET.get('commodity')
 
-    country_commodity_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == export_commodity)]
-    country_commodity_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == import_commodity)]
+    if import_commodity == 'All' :
+        country_commodity_export_data = df[(df['country'] == selected_country)].groupby('year')['value'].sum().reset_index()
+        country_commodity_import_data = df2[(df2['country'] == selected_country)].groupby('year')['value'].sum().reset_index()
+
+    else :
+        country_commodity_export_data = df[(df['country'] == selected_country) & (df['Commodity'] == export_commodity)]
+        country_commodity_import_data = df2[(df2['country'] == selected_country) & (df2['Commodity'] == import_commodity)]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=country_commodity_export_data['year'], y=country_commodity_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
@@ -281,9 +286,13 @@ def commodity_country_selection(request) :
     export_country = request.GET.get('export_country', export_country_values[0])
     if('country' in request.GET):
         import_country = export_country = request.GET.get('country')
+    if import_country == 'All' :
+        commodity_country_export_data = df[(df['Commodity'] == selected_commodity)].groupby('year')['value'].sum().reset_index()
+        commodity_country_import_data = df2[(df2['Commodity'] == selected_commodity)].groupby('year')['value'].sum().reset_index()
 
-    commodity_country_export_data = df[(df['Commodity'] == selected_commodity) & (df['country'] == export_country)]
-    commodity_country_import_data = df2[(df2['Commodity'] == selected_commodity) & (df2['country'] == import_country)]
+    else :
+        commodity_country_export_data = df[(df['Commodity'] == selected_commodity) & (df['country'] == export_country)]
+        commodity_country_import_data = df2[(df2['Commodity'] == selected_commodity) & (df2['country'] == import_country)]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=commodity_country_export_data['year'], y=commodity_country_export_data['value'], mode='lines+markers', name='Export', line=dict(color='blue')))
