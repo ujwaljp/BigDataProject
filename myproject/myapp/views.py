@@ -256,7 +256,7 @@ def country_commodity_selection(request) :
     fig.add_trace(go.Scatter(x=country_commodity_import_data['year'], y=country_commodity_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
     fig.update_layout(title=f'Export and Import Valuation of {import_commodity} and {export_commodity} in {selected_country} ({start_year}-{end_year})',
                     xaxis_title='Year',
-                    yaxis_title='Valuation')
+                    yaxis_title='Valuation in Million US $')
     
     
     return render(request, 'country_commodity_selection.html', {'line_chart_html': fig.to_html(), 'country_values' : df['country'].unique(), 'selected_country' : selected_country, 'import_commodity_values' : import_commodity_values, 'import_commodity' : import_commodity, 'export_commodity' : export_commodity, 'export_commodity_values': export_commodity_values, 'commodity_values': df['Commodity'].unique()})
@@ -299,7 +299,7 @@ def commodity_country_selection(request) :
     fig.add_trace(go.Scatter(x=commodity_country_import_data['year'], y=commodity_country_import_data['value'], mode='lines+markers', name='Import', line=dict(color='orange')))
     fig.update_layout(title=f'Export and Import Valuation of {import_country} and {export_country} in {selected_commodity} ({start_year}-{end_year})',
                     xaxis_title='Year',
-                    yaxis_title='Valuation')
+                    yaxis_title='Valuation in Million US $')
     
     
     return render(request, 'commodity_country_selection.html', {'line_chart_html': fig.to_html(), 'commodity_values' : df['Commodity'].unique(), 'selected_commodity' : selected_commodity, 'import_country_values' : import_country_values, 'import_country' : import_country, 'export_country' : export_country, 'export_country_values': export_country_values, 'country_values': df['country'].unique()})
