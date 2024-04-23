@@ -404,7 +404,7 @@ def trend_analysis(request):
         if len(stock_data) > 2 :
             fig1.add_trace(go.Scatter(x=stock_data[2]['year'], y=stock_data[2]['value'], mode='lines+markers', name=company_list[2], line=dict(color='red')))
 
-        fig1.update_layout(title=f'Export and Import Valuation of {selected_sector} in ({2010}-{2021})',
+        fig1.update_layout(title=f'Stock trends of {selected_sector} in ({2010}-{2021})',
                         xaxis_title='Year',
                         yaxis_title='Valuation')
         
